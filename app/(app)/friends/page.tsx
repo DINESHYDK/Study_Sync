@@ -24,10 +24,16 @@ export default function FriendsPage() {
         <AddFriendDialog />
       </header>
 
-      {friends.length === 0 ? (
+      {isLoading ? (
+        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3 animate-pulse">
+          <div className="h-44 bg-secondary/50 rounded-2xl border border-border" />
+          <div className="h-44 bg-secondary/50 rounded-2xl border border-border" />
+          <div className="h-44 bg-secondary/50 rounded-2xl border border-border" />
+        </div>
+      ) : friends.length === 0 ? (
         <Card>
           <CardContent className="p-8 text-sm text-muted-foreground">
-            {isLoading ? "Loading friends..." : "No friends yet. Share your referral code from Settings."}
+            No friends yet. Share your referral code from Settings.
           </CardContent>
         </Card>
       ) : (

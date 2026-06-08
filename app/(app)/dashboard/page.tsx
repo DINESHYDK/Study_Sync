@@ -31,6 +31,7 @@ export default function DashboardPage() {
   const profile = useUserStore((state) => state.profile);
   const segments = useTimerStore((state) => state.segments);
   const friends = useFriendStore((state) => state.friends);
+  const isLoadingFriends = useFriendStore((state) => state.isLoading);
   const { isConfigured } = useSupabase();
 
   return (
@@ -61,7 +62,13 @@ export default function DashboardPage() {
         <div className="flex items-center justify-between">
           <h2 className="font-heading text-xl font-semibold">Friends Activity</h2>
         </div>
-        {friends.length === 0 ? (
+        {isLoadingFriends ? (
+          <div className="flex gap-4 overflow-x-auto pb-2 animate-pulse">
+            <div className="w-80 h-32 bg-secondary/50 rounded-2xl border border-border shrink-0" />
+            <div className="w-80 h-32 bg-secondary/50 rounded-2xl border border-border shrink-0" />
+            <div className="w-80 h-32 bg-secondary/50 rounded-2xl border border-border shrink-0" />
+          </div>
+        ) : friends.length === 0 ? (
           <div className="rounded-2xl border border-dashed border-border p-6 text-sm text-muted-foreground">
             No friend activity yet. Add friends from Settings to see live progress here.
           </div>

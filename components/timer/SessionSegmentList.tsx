@@ -6,7 +6,7 @@ import { FormEvent, useState } from "react";
 import { useTimer } from "@/hooks/useTimer";
 import { formatDurationCompact, formatTimeRange, segmentDurationSecs, totalDurationSecs } from "@/lib/timer";
 import { cn } from "@/lib/utils";
-import type { TimerSegment } from "@/stores/useTimerStore";
+import { useTimerStore, type TimerSegment } from "@/stores/useTimerStore";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -63,7 +63,23 @@ function EditableSubject({
 }
 
 export function SessionSegmentList({ segments, readOnly = false, title = "Session History" }: SessionSegmentListProps) {
+  const isHydrated = useTimerStore((state) => state.isHydrated);
   const total = totalDurationSecs(segments);
+
+  if (!isHydrated && !readOnly) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle>{title}</CardTitle>
+        </CardHeader>
+        <CardContent className="animate-pulse space-y-4">
+          <div className="h-8 bg-secondary/50 rounded-xl border border-border" />
+          <div className="h-10 bg-secondary/50 rounded-xl border border-border" />
+          <div className="h-10 bg-secondary/50 rounded-xl border border-border" />
+        </CardContent>
+      </Card>
+    );
+  }
 
   return (
     <Card>
