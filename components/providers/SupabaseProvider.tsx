@@ -1,15 +1,16 @@
 "use client";
 
-import type { SupabaseClient, User } from "@supabase/supabase-js";
+import type { User } from "@supabase/supabase-js";
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
 
 import { isSupabaseConfigured } from "@/lib/supabase/config";
 import { createSupabaseBrowserClient } from "@/lib/supabase/client";
 import { demoProfile, useUserStore, type UserProfile } from "@/stores/useUserStore";
-import type { Database } from "@/types/database";
+
+type BrowserSupabaseClient = ReturnType<typeof createSupabaseBrowserClient>;
 
 type SupabaseContextValue = {
-  supabase: SupabaseClient<Database>;
+  supabase: BrowserSupabaseClient;
   isConfigured: boolean;
   isReady: boolean;
   sessionUser: User | null;
@@ -17,7 +18,7 @@ type SupabaseContextValue = {
 
 const SupabaseContext = createContext<SupabaseContextValue | null>(null);
 
-async function fetchProfile(supabase: SupabaseClient<Database>, user: User) {
+async function fetchProfile(supabase: BrowserSupabaseClient, user: User) {
   const { data, error } = await supabase.from("profiles").select("*").eq("id", user.id).single();
 
   if (error) {

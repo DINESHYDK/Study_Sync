@@ -18,6 +18,20 @@ export function normalizeReferralCode(value: string) {
   return value.trim().toUpperCase().replace(/\s+/g, "");
 }
 
+export function computeInitials(fullName: string) {
+  const words = fullName.trim().split(/\s+/).filter(Boolean);
+
+  if (words.length === 0) {
+    return "U";
+  }
+
+  if (words.length === 1) {
+    return words[0].slice(0, 1).toUpperCase();
+  }
+
+  return `${words[0].slice(0, 1)}${words[words.length - 1].slice(0, 1)}`.toUpperCase();
+}
+
 export function compactErrorMessage(error: unknown, fallback: string) {
   if (error instanceof Error && error.message.trim().length > 0) {
     return error.message;

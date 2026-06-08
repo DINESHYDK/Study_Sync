@@ -1,5 +1,5 @@
-import { createServerClient } from "@supabase/ssr";
-import { createClient as createSupabaseJsClient, type SupabaseClient } from "@supabase/supabase-js";
+import { createServerClient, type CookieOptions } from "@supabase/ssr";
+import { createClient as createSupabaseJsClient } from "@supabase/supabase-js";
 import { cookies } from "next/headers";
 
 import {
@@ -10,6 +10,8 @@ import {
 } from "@/lib/supabase/config";
 import type { Database } from "@/types/database";
 
+type SupabaseServiceClient = ReturnType<typeof createSupabaseJsClient<Database>>;
+
 export function createSupabaseServerClient() {
   const cookieStore = cookies();
   const { url, anonKey } = publicSupabaseConfig();
@@ -19,14 +21,14 @@ export function createSupabaseServerClient() {
       get(name: string) {
         return cookieStore.get(name)?.value;
       },
-      set(name: string, value: string, options) {
+      set(name: string, value: string, options: CookieOptions) {
         try {
           cookieStore.set({ name, value, ...options });
         } catch {
           // Server Components cannot always set cookies; middleware handles refresh.
         }
       },
-      remove(name: string, options) {
+      remove(name: string, options: CookieOptions) {
         try {
           cookieStore.set({ name, value: "", ...options });
         } catch {
@@ -37,7 +39,7 @@ export function createSupabaseServerClient() {
   });
 }
 
-export function createSupabaseServiceClient(): SupabaseClient<Database> | null {
+export function createSupabaseServiceClient(): SupabaseServiceClient | null {
   if (!isServiceRoleConfigured) {
     return null;
   }
