@@ -33,3 +33,21 @@ Implemented auth pages, protected app shell, dashboard timer, session history, s
 ## Milestone 5 - Supabase Setup
 
 Added `supabase/schema.sql` with the PRD schema, functions, triggers, RLS policies, realtime publication entries, indexes, and database-side todo rules. I added `WITH CHECK` to write policies so users cannot write rows for other users even if a client is modified.
+
+## Milestone 6 - Advanced Timer Features & Polish
+
+Implemented advanced timer capabilities and user experience polish:
+- **Simplified Single-Button Toggle**: Replaced dual-button timer controls with a single, state-aware toggle button that shifts labels ("Start", "Pause", "Resume") and colors dynamically based on active segment state.
+- **Timer Heartbeat & Recovery**: Implemented a 15-second local storage heartbeat mechanism in the `TimerProvider`. When a suspended browser tab is re-entered or refreshed, the running timer state is gracefully recovered without auto-pausing or resetting if the heartbeat is recent.
+- **Document Picture-in-Picture & Overlay**: Equipped desktop browsers with native Document PiP floating timers and fallback draggable/resizable overlays, using `touch-none` constraints for mobile compatibility.
+- **Fullscreen Focus Mode**: Built an immersive fullscreen view with scale-animations, large digits, and an inline CSS transform-based screen rotation tool to optimize for mobile landscape views.
+- **Referral Code Lookup Fix**: Modified Supabase Row Level Security (RLS) policies to permit authenticated profile referral code lookups, resolving issues when adding friends.
+
+## Milestone 7 - UI Responsiveness, Skeletons & Input Spam Protection
+
+Designed and implemented feedback mechanisms to keep the application responsive and prevent duplicate submissions:
+- **Visual Skeletons**: Added animated tailwind skeleton loaders during initial database fetches in the `TodoList` and the peer comparison `ComparisonView`.
+- **Form Input & Button Locking**: Added disabled states and transition indicators (e.g. "Saving...", "Adding...", "Declining...", "Logging in...") during auth submissions (login, signup, forgot password, update password), settings updates, onboarding completion, and todo mutations.
+- **Timer Mutex Toggle Guard**: Implemented an `isToggling` ref lock and state property in `TimerProvider` to block multiple clicks from triggering concurrent database requests, keeping the timer digit transition clean.
+- **Mobile Grid & Sidebar Alignment**: Fixed vertical/horizontal viewport overflow issues by replacing default grid layouts with flexible flexboxes, and set the sidebar to `sticky top-0 h-screen` to lock its height.
+
