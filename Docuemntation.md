@@ -46,7 +46,7 @@ Implemented advanced timer capabilities and user experience polish:
 ## Milestone 7 - UI Responsiveness, Skeletons & Input Spam Protection
 
 Designed and implemented feedback mechanisms to keep the application responsive and prevent duplicate submissions:
-- **Visual Skeletons**: Added animated tailwind skeleton loaders during initial database fetches in the `TodoList` and the peer comparison `ComparisonView`.
+- **Visual Skeletons**: Added animated tailwind skeleton loaders during initial database fetches in the `TodoList`, the peer comparison `ComparisonView`, the `SessionSegmentList` history, and the friends/activity lists on the dashboard and main friends page.
 - **Form Input & Button Locking**: Added disabled states and transition indicators (e.g. "Saving...", "Adding...", "Declining...", "Logging in...") during auth submissions (login, signup, forgot password, update password), settings updates, onboarding completion, and todo mutations.
 - **Timer Mutex Toggle Guard**: Implemented an `isToggling` ref lock and state property in `TimerProvider` to block multiple clicks from triggering concurrent database requests, keeping the timer digit transition clean.
 - **Mobile Grid & Sidebar Alignment**: Fixed vertical/horizontal viewport overflow issues by replacing default grid layouts with flexible flexboxes, and set the sidebar to `sticky top-0 h-screen` to lock its height.
