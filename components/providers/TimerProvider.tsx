@@ -163,23 +163,32 @@ export function TimerProvider({ children }: { children: React.ReactNode }) {
 
       if (storedSegment?.ended_at === null) {
         const heartbeat = window.localStorage.getItem("timer_last_heartbeat");
-        let endedAt = new Date().toISOString();
-        if (heartbeat) {
-          const heartbeatTime = new Date(heartbeat).getTime();
-          const startedAtTime = new Date(storedSegment.started_at).getTime();
-          if (heartbeatTime > startedAtTime) {
-            endedAt = heartbeat;
-          }
-        }
-        await supabase
-          .from("session_segments")
-          .update({ ended_at: endedAt })
-          .eq("id", storedSegment.id)
-          .is("ended_at", null);
-        toast.info("Your timer was automatically paused.");
-      }
+        const now = new Date().getTime();
+        const heartbeatTime = heartbeat ? new Date(heartbeat).getTime() : 0;
 
-      clearActiveSegment();
+        if (heartbeat && (now - heartbeatTime < 15000)) {
+          // Tab was re-entered or refreshed recently. Restore running state.
+          // Do not pause or clear the active segment.
+        } else {
+          // Abandoned segment. Eagerly pause it.
+          let endedAt = new Date().toISOString();
+          if (heartbeat) {
+            const startedAtTime = new Date(storedSegment.started_at).getTime();
+            if (heartbeatTime > startedAtTime) {
+              endedAt = heartbeat;
+            }
+          }
+          await supabase
+            .from("session_segments")
+            .update({ ended_at: endedAt })
+            .eq("id", storedSegment.id)
+            .is("ended_at", null);
+          toast.info("Your timer was automatically paused.");
+          clearActiveSegment();
+        }
+      } else {
+        clearActiveSegment();
+      }
     }
 
     const { data: session } = await supabase
