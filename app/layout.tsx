@@ -22,8 +22,40 @@ const jetBrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "StudySync",
-  description: "Collaborative study tracking for friends.",
+  title: {
+    default: "StudySync",
+    template: "%s | StudySync",
+  },
+  description: "Track your study sessions. Compete with friends.",
+  metadataBase: new URL("https://study-sync-ydk.vercel.app"),
+  alternates: {
+    canonical: "/",
+  },
+  icons: {
+    icon: [
+      { url: "/favicon.ico", sizes: "any" },
+      { url: "/icon.png", type: "image/png", sizes: "192x192" },
+    ],
+    apple: [
+      { url: "/apple-icon.png", sizes: "180x180", type: "image/png" },
+    ],
+    shortcut: "/favicon.ico",
+  },
+  openGraph: {
+    title: "StudySync",
+    description: "Track your study sessions. Compete with friends.",
+    url: "https://study-sync-ydk.vercel.app",
+    siteName: "StudySync",
+    locale: "en_US",
+    type: "website",
+    images: [{ url: "/logo.png", width: 512, height: 512 }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "StudySync",
+    description: "Track your study sessions. Compete with friends.",
+    images: ["/logo.png"],
+  },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

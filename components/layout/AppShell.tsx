@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
+import { Logo } from "@/components/Logo";
 import { OnboardingModal } from "@/components/modals/OnboardingModal";
 import { SubjectNameModal } from "@/components/modals/SubjectNameModal";
 import { UserAvatar } from "@/components/avatar/UserAvatar";
@@ -59,11 +60,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
   const sidebar = (
     <aside className="flex h-full w-72 flex-col border-r border-border bg-[#101018]/95 px-4 py-5 backdrop-blur">
-      <Link className="flex items-center gap-3 rounded-xl px-2 py-2" href="/dashboard" onClick={() => setMobileOpen(false)}>
-        <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-[#6c63ff] to-[#22c55e] text-white">
-          <BookOpenCheck className="h-5 w-5" />
-        </span>
-        <span className="font-heading text-xl font-semibold">StudySync</span>
+      <Link className="flex items-center px-2 py-2" href="/dashboard" onClick={() => setMobileOpen(false)}>
+        <Logo size={36} showText={true} />
       </Link>
 
       <Separator className="my-5" />
@@ -118,9 +116,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       <div className="hidden lg:block sticky top-0 h-screen">{sidebar}</div>
 
       <div className="sticky top-0 z-40 flex items-center justify-between border-b border-border bg-background/85 px-4 py-3 backdrop-blur lg:hidden">
-        <Link className="flex items-center gap-2 font-heading text-lg font-semibold" href="/dashboard">
-          <BookOpenCheck className="h-5 w-5 text-violet-300" />
-          StudySync
+        <Link className="flex items-center" href="/dashboard">
+          <Logo size={28} showText={true} />
         </Link>
         <Button onClick={() => setMobileOpen((value) => !value)} size="icon" variant="ghost">
           {isMobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
