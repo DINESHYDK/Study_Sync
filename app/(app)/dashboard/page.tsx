@@ -34,7 +34,7 @@ export default function DashboardPage() {
   const { isConfigured } = useSupabase();
 
   return (
-    <div className="grid gap-6">
+    <div className="flex flex-col gap-6 min-w-0 w-full">
       <header className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <p className="text-sm text-muted-foreground">{format(new Date(), "EEEE, MMMM d")}</p>
@@ -57,7 +57,7 @@ export default function DashboardPage() {
       <SessionSegmentList segments={segments} />
       <TodoList />
 
-      <section className="grid gap-3">
+      <section className="flex flex-col gap-3 min-w-0 w-full">
         <div className="flex items-center justify-between">
           <h2 className="font-heading text-xl font-semibold">Friends Activity</h2>
         </div>

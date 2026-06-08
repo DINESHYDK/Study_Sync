@@ -1,7 +1,8 @@
 "use client";
 
 import { Grip, Pause, Play, X } from "lucide-react";
-import { PointerEvent, useRef } from "react";
+import { PointerEvent, useEffect, useRef } from "react";
+import { createPortal } from "react-dom";
 
 import { useTimer } from "@/hooks/useTimer";
 import { formatClock, formatDurationCompact } from "@/lib/timer";
@@ -19,6 +20,50 @@ function clampPopupState(state: TimerPopupState): TimerPopupState {
   };
 }
 
+interface TimerPopupContentProps {
+  isPip: boolean;
+  currentElapsedSeconds: number;
+  isRunning: boolean;
+  status: string;
+  todayTotalSeconds: number;
+  resumeTimer: () => void;
+  pauseTimer: (options?: { showSubjectModal?: boolean }) => void;
+  setPopupOpen: (isOpen: boolean) => void;
+}
+
+function TimerPopupContent({
+  isPip,
+  currentElapsedSeconds,
+  isRunning,
+  status,
+  todayTotalSeconds,
+  resumeTimer,
+  pauseTimer,
+}: TimerPopupContentProps) {
+  return (
+    <div className={cn("flex flex-1 flex-col justify-between p-4", isPip && "bg-card text-card-foreground h-full")}>
+      <div>
+        <div className="timer-digits font-mono text-3xl font-semibold">{formatClock(currentElapsedSeconds)}</div>
+        <p className={cn("mt-1 text-sm font-medium", isRunning ? "text-emerald-400" : "text-muted-foreground")}>
+          {isRunning ? "Running" : status === "paused" ? "Paused" : "Idle"}
+        </p>
+        <p className="mt-1 text-sm text-muted-foreground">Today: {formatDurationCompact(todayTotalSeconds)}</p>
+      </div>
+
+      <div className="mt-3 flex gap-2">
+        <Button disabled={isRunning} onClick={() => void resumeTimer()} size="sm" variant="success">
+          <Play className="h-4 w-4 mr-1" />
+          Resume
+        </Button>
+        <Button disabled={!isRunning} onClick={() => void pauseTimer({ showSubjectModal: true })} size="sm" variant="destructive">
+          <Pause className="h-4 w-4 mr-1" />
+          Pause
+        </Button>
+      </div>
+    </div>
+  );
+}
+
 export function TimerPopup() {
   const { resumeTimer, pauseTimer } = useTimer();
   const isPopupOpen = useTimerStore((state) => state.isPopupOpen);
@@ -28,6 +73,9 @@ export function TimerPopup() {
   const status = useTimerStore((state) => state.status);
   const currentElapsedSeconds = useTimerStore((state) => state.currentElapsedSeconds);
   const todayTotalSeconds = useTimerStore((state) => state.todayTotalSeconds);
+  const pipWindow = useTimerStore((state) => state.pipWindow);
+  const setPipWindow = useTimerStore((state) => state.setPipWindow);
+
   const dragRef = useRef<{
     pointerId: number;
     startClientX: number;
@@ -35,7 +83,75 @@ export function TimerPopup() {
     startState: TimerPopupState;
     mode: "move" | "resize";
   } | null>(null);
+
   const isRunning = status === "running";
+
+  useEffect(() => {
+    if (!isPopupOpen || !pipWindow) {
+      if (pipWindow) {
+        try {
+          pipWindow.close();
+        } catch {}
+        setPipWindow(null);
+      }
+      return;
+    }
+
+    const copyStyles = () => {
+      const doc = pipWindow.document;
+
+      // Copy all stylesheets
+      Array.from(document.styleSheets).forEach((styleSheet) => {
+        try {
+          if (styleSheet.cssRules) {
+            const newStyleEl = doc.createElement("style");
+            Array.from(styleSheet.cssRules).forEach((rule) => {
+              newStyleEl.appendChild(doc.createTextNode(rule.cssText));
+            });
+            doc.head.appendChild(newStyleEl);
+          } else if (styleSheet.href) {
+            const newLinkEl = doc.createElement("link");
+            newLinkEl.rel = "stylesheet";
+            newLinkEl.href = styleSheet.href;
+            doc.head.appendChild(newLinkEl);
+          }
+        } catch (e) {
+          if (styleSheet.href) {
+            const newLinkEl = doc.createElement("link");
+            newLinkEl.rel = "stylesheet";
+            newLinkEl.href = styleSheet.href;
+            doc.head.appendChild(newLinkEl);
+          }
+        }
+      });
+
+      // Copy body/html classes and styling
+      doc.documentElement.className = document.documentElement.className;
+      doc.body.className = document.body.className;
+      doc.body.style.margin = "0";
+      doc.body.style.padding = "0";
+      doc.body.style.overflow = "hidden";
+      doc.body.style.height = "100vh";
+      doc.body.style.display = "flex";
+      doc.body.style.flexDirection = "column";
+    };
+
+    copyStyles();
+
+    const handlePageHide = () => {
+      setPopupOpen(false);
+      setPipWindow(null);
+    };
+
+    pipWindow.addEventListener("pagehide", handlePageHide);
+
+    return () => {
+      pipWindow.removeEventListener("pagehide", handlePageHide);
+      try {
+        pipWindow.close();
+      } catch {}
+    };
+  }, [isPopupOpen, pipWindow, setPopupOpen, setPipWindow]);
 
   function handlePointerDown(event: PointerEvent<HTMLDivElement>, mode: "move" | "resize") {
     event.currentTarget.setPointerCapture(event.pointerId);
@@ -90,6 +206,24 @@ export function TimerPopup() {
     return null;
   }
 
+  // If PiP is active, render inside the portal
+  if (pipWindow) {
+    return createPortal(
+      <TimerPopupContent
+        isPip={true}
+        currentElapsedSeconds={currentElapsedSeconds}
+        isRunning={isRunning}
+        status={status}
+        todayTotalSeconds={todayTotalSeconds}
+        resumeTimer={resumeTimer}
+        pauseTimer={pauseTimer}
+        setPopupOpen={setPopupOpen}
+      />,
+      pipWindow.document.body
+    );
+  }
+
+  // Fallback: render draggable, resizable browser overlay
   return (
     <div
       className="fixed z-[9999] flex flex-col overflow-hidden rounded-2xl border border-border bg-card shadow-glow"
@@ -121,26 +255,16 @@ export function TimerPopup() {
         </Tooltip>
       </div>
 
-      <div className="flex flex-1 flex-col justify-between p-4">
-        <div>
-          <div className="timer-digits font-mono text-3xl font-semibold">{formatClock(currentElapsedSeconds)}</div>
-          <p className={cn("mt-1 text-sm", isRunning ? "text-emerald-200" : "text-muted-foreground")}>
-            {isRunning ? "Running" : status === "paused" ? "Paused" : "Idle"}
-          </p>
-          <p className="mt-1 text-sm text-muted-foreground">Today: {formatDurationCompact(todayTotalSeconds)}</p>
-        </div>
-
-        <div className="mt-3 flex gap-2">
-          <Button disabled={isRunning} onClick={() => void resumeTimer()} size="sm" variant="success">
-            <Play className="h-4 w-4" />
-            Resume
-          </Button>
-          <Button disabled={!isRunning} onClick={() => void pauseTimer({ showSubjectModal: true })} size="sm" variant="destructive">
-            <Pause className="h-4 w-4" />
-            Pause
-          </Button>
-        </div>
-      </div>
+      <TimerPopupContent
+        isPip={false}
+        currentElapsedSeconds={currentElapsedSeconds}
+        isRunning={isRunning}
+        status={status}
+        todayTotalSeconds={todayTotalSeconds}
+        resumeTimer={resumeTimer}
+        pauseTimer={pauseTimer}
+        setPopupOpen={setPopupOpen}
+      />
 
       <div
         className="absolute bottom-1 right-1 h-5 w-5 cursor-nwse-resize rounded-md text-muted-foreground"

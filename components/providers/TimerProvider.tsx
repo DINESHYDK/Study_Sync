@@ -100,6 +100,7 @@ function saveActiveSegment(segmentId: string) {
 
 function clearActiveSegment() {
   window.localStorage.removeItem(ACTIVE_SEGMENT_KEY);
+  window.localStorage.removeItem("timer_last_heartbeat");
 }
 
 function createDemoSegment(userId: string): TimerSegment {
@@ -161,7 +162,15 @@ export function TimerProvider({ children }: { children: React.ReactNode }) {
         .maybeSingle();
 
       if (storedSegment?.ended_at === null) {
-        const endedAt = new Date().toISOString();
+        const heartbeat = window.localStorage.getItem("timer_last_heartbeat");
+        let endedAt = new Date().toISOString();
+        if (heartbeat) {
+          const heartbeatTime = new Date(heartbeat).getTime();
+          const startedAtTime = new Date(storedSegment.started_at).getTime();
+          if (heartbeatTime > startedAtTime) {
+            endedAt = heartbeat;
+          }
+        }
         await supabase
           .from("session_segments")
           .update({ ended_at: endedAt })
@@ -402,7 +411,11 @@ export function TimerProvider({ children }: { children: React.ReactNode }) {
     }
 
     tick();
-    const intervalId = window.setInterval(tick, 1000);
+    window.localStorage.setItem("timer_last_heartbeat", new Date().toISOString());
+    const intervalId = window.setInterval(() => {
+      tick();
+      window.localStorage.setItem("timer_last_heartbeat", new Date().toISOString());
+    }, 1000);
 
     return () => window.clearInterval(intervalId);
   }, [status, tick]);
@@ -421,11 +434,12 @@ export function TimerProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     function handleVisibilityChange() {
-      if (document.visibilityState === "hidden" && status === "running") {
-        void pauseTimer({
-          showSubjectModal: false,
-          toastMessage: "Timer auto-paused (tab hidden)",
-        });
+      if (status === "running") {
+        if (document.visibilityState === "hidden") {
+          window.localStorage.setItem("timer_last_heartbeat", new Date().toISOString());
+        } else if (document.visibilityState === "visible") {
+          tick();
+        }
       }
     }
 
@@ -468,7 +482,7 @@ export function TimerProvider({ children }: { children: React.ReactNode }) {
       window.removeEventListener("beforeunload", handleBeforeUnload);
       window.removeEventListener("pagehide", handlePageHide);
     };
-  }, [activeSegmentId, isConfigured, pauseTimer, status]);
+  }, [activeSegmentId, isConfigured, pauseTimer, status, tick]);
 
   useEffect(() => {
     if (status !== "running" || !activeStartedAt) {

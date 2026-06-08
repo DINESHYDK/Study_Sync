@@ -30,6 +30,12 @@ export function OnboardingModal() {
     setSubmitting(true);
     updateProfile({ onboarding_done: true });
 
+    if (profile.referral_code === "PENDING") {
+      toast.error("Your user profile is missing from the database. Please make sure the profiles table is configured.");
+      setSubmitting(false);
+      return;
+    }
+
     if (isConfigured) {
       const { error } = await supabase.from("profiles").update({ onboarding_done: true }).eq("id", profile.id);
 

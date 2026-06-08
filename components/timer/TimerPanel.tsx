@@ -17,7 +17,26 @@ export function TimerPanel() {
   const currentElapsedSeconds = useTimerStore((state) => state.currentElapsedSeconds);
   const todayTotalSeconds = useTimerStore((state) => state.todayTotalSeconds);
   const setPopupOpen = useTimerStore((state) => state.setPopupOpen);
+  const setPipWindow = useTimerStore((state) => state.setPipWindow);
   const isRunning = status === "running";
+
+  const handlePopOut = async () => {
+    if (typeof window !== "undefined" && "documentPictureInPicture" in window) {
+      try {
+        const pip = await (window as any).documentPictureInPicture.requestWindow({
+          width: 320,
+          height: 220,
+        });
+        setPipWindow(pip);
+        setPopupOpen(true);
+      } catch (err) {
+        console.error("Failed to open PiP window, falling back to overlay", err);
+        setPopupOpen(true);
+      }
+    } else {
+      setPopupOpen(true);
+    }
+  };
 
   return (
     <Card className="overflow-hidden">
@@ -30,7 +49,7 @@ export function TimerPanel() {
           <Badge variant={isRunning ? "success" : "secondary"}>{isRunning ? "Running" : status === "paused" ? "Paused" : "Idle"}</Badge>
           <Tooltip>
             <TooltipTrigger asChild>
-              <Button onClick={() => setPopupOpen(true)} size="icon" variant="outline">
+              <Button onClick={handlePopOut} size="icon" variant="outline">
                 <Maximize2 className="h-4 w-4" />
                 <span className="sr-only">Open timer popup</span>
               </Button>

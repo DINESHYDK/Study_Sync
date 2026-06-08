@@ -134,6 +134,10 @@ export function useFriends() {
         return "Configure Supabase before sending friend requests.";
       }
 
+      if (profile.referral_code === "PENDING") {
+        return "Your user profile is missing from the database. Please make sure the profiles table is configured.";
+      }
+
       const referralCode = normalizeReferralCode(inputCode);
 
       if (!referralCode) {
@@ -209,7 +213,12 @@ export function useFriends() {
 
   const acceptRequest = useCallback(
     async (requestId: string) => {
-      if (!isConfigured) {
+      if (!isConfigured || !profile) {
+        return;
+      }
+
+      if (profile.referral_code === "PENDING") {
+        toast.error("Your user profile is missing from the database.");
         return;
       }
 
@@ -228,7 +237,12 @@ export function useFriends() {
 
   const declineRequest = useCallback(
     async (requestId: string) => {
-      if (!isConfigured) {
+      if (!isConfigured || !profile) {
+        return;
+      }
+
+      if (profile.referral_code === "PENDING") {
+        toast.error("Your user profile is missing from the database.");
         return;
       }
 

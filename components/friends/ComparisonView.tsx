@@ -181,7 +181,7 @@ export function ComparisonView({ friendId }: { friendId: string }) {
   }
 
   return (
-    <div className="grid gap-6">
+    <div className="flex flex-col gap-6 min-w-0 w-full">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <Button asChild variant="ghost">
           <Link href="/friends">
@@ -208,7 +208,7 @@ export function ComparisonView({ friendId }: { friendId: string }) {
           <div className="rounded-2xl border border-amber-500/30 bg-amber-500/10 p-5 text-center font-heading text-2xl font-semibold text-amber-100">
             {winnerText(left, right, metric)}
           </div>
-          <div className="grid gap-5 xl:grid-cols-2">
+          <div className="grid gap-5 xl:grid-cols-2 min-w-0 w-full">
             <ComparisonColumn data={left} highlighted={scores.leftWins} />
             <ComparisonColumn data={right} highlighted={scores.rightWins} />
           </div>

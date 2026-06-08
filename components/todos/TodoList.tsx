@@ -95,10 +95,11 @@ type TodoListProps = {
 export function TodoList({ ownerId, date = todayLocalDate(), readOnly = false, todos: externalTodos, title = "Today's Tasks" }: TodoListProps) {
   const { supabase, isConfigured } = useSupabase();
   const profile = useUserStore((state) => state.profile);
+  const sessionUser = useUserStore((state) => state.sessionUser);
   const [todos, setTodos] = useState<TodoRow[]>(externalTodos ?? []);
   const [text, setText] = useState("");
   const [isLoading, setLoading] = useState(false);
-  const activeOwnerId = ownerId ?? profile?.id ?? "";
+  const activeOwnerId = ownerId ?? sessionUser?.id ?? "";
   const sensors = useSensors(
     useSensor(PointerSensor),
     useSensor(KeyboardSensor, {
@@ -145,11 +146,23 @@ export function TodoList({ ownerId, date = todayLocalDate(), readOnly = false, t
     void loadTodos();
   }, [loadTodos]);
 
+  function checkProfileExists() {
+    if (isConfigured && (!profile || profile.referral_code === "PENDING")) {
+      toast.error("Your user profile is missing from the database. Please make sure the profiles table is configured and your profile is created.");
+      return false;
+    }
+    return true;
+  }
+
   async function handleAdd(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const normalizedText = text.trim();
 
     if (!normalizedText || readOnly || !activeOwnerId) {
+      return;
+    }
+
+    if (!checkProfileExists()) {
       return;
     }
 
@@ -208,6 +221,10 @@ export function TodoList({ ownerId, date = todayLocalDate(), readOnly = false, t
       return;
     }
 
+    if (!checkProfileExists()) {
+      return;
+    }
+
     const nextCompleted = !todo.is_completed;
     setTodos((current) => current.map((item) => (item.id === todo.id ? { ...item, is_completed: nextCompleted } : item)));
 
@@ -229,6 +246,10 @@ export function TodoList({ ownerId, date = todayLocalDate(), readOnly = false, t
 
   async function handleDelete(todo: TodoRow) {
     if (readOnly) {
+      return;
+    }
+
+    if (!checkProfileExists()) {
       return;
     }
 

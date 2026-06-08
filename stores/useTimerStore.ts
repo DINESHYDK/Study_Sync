@@ -33,6 +33,7 @@ type TimerStore = {
   todayTotalSeconds: number;
   segments: TimerSegment[];
   isPopupOpen: boolean;
+  pipWindow: Window | null;
   popupState: TimerPopupState;
   subjectModalSegmentId: string | null;
   isHydrated: boolean;
@@ -44,6 +45,7 @@ type TimerStore = {
   tick: () => void;
   resetTimer: () => void;
   setPopupOpen: (isPopupOpen: boolean) => void;
+  setPipWindow: (pipWindow: Window | null) => void;
   setPopupState: (popupState: TimerPopupState) => void;
   openSubjectModal: (segmentId: string) => void;
   closeSubjectModal: () => void;
@@ -58,6 +60,7 @@ export const useTimerStore = create<TimerStore>((set, get) => ({
   todayTotalSeconds: 0,
   segments: [],
   isPopupOpen: false,
+  pipWindow: null,
   popupState: defaultPopupState,
   subjectModalSegmentId: null,
   isHydrated: false,
@@ -149,6 +152,7 @@ export const useTimerStore = create<TimerStore>((set, get) => ({
       subjectModalSegmentId: null,
     }),
   setPopupOpen: (isPopupOpen) => set({ isPopupOpen }),
+  setPipWindow: (pipWindow) => set({ pipWindow }),
   setPopupState: (popupState) => set({ popupState }),
   openSubjectModal: (subjectModalSegmentId) => set({ subjectModalSegmentId }),
   closeSubjectModal: () => set({ subjectModalSegmentId: null }),

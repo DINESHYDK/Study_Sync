@@ -11,7 +11,7 @@ export default function FriendsPage() {
   const isLoading = useFriendStore((state) => state.isLoading);
 
   return (
-    <div className="grid gap-6">
+    <div className="flex flex-col gap-6 min-w-0 w-full">
       <header className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <h1 className="font-heading text-3xl font-semibold tracking-normal">Your Study Group</h1>

@@ -56,6 +56,11 @@ export default function SettingsPage() {
       return;
     }
 
+    if (currentProfile.referral_code === "PENDING") {
+      toast.error("Your user profile is missing from the database. Please make sure the profiles table is configured.");
+      return;
+    }
+
     setSavingName(true);
     const { error } = await supabase
       .from("profiles")
@@ -75,6 +80,11 @@ export default function SettingsPage() {
     updateProfile({ avatar_id: avatarId });
 
     if (!isConfigured) {
+      return;
+    }
+
+    if (currentProfile.referral_code === "PENDING") {
+      toast.error("Your user profile is missing from the database. Please make sure the profiles table is configured.");
       return;
     }
 
@@ -144,7 +154,7 @@ export default function SettingsPage() {
   }
 
   return (
-    <div className="grid gap-6">
+    <div className="flex flex-col gap-6 min-w-0 w-full">
       <header>
         <h1 className="font-heading text-3xl font-semibold tracking-normal">Settings</h1>
         <p className="mt-1 text-sm text-muted-foreground">Profile, referral codes, incoming requests, and account controls.</p>
