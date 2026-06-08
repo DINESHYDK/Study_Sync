@@ -51,3 +51,12 @@ Designed and implemented feedback mechanisms to keep the application responsive 
 - **Timer Mutex Toggle Guard**: Implemented an `isToggling` ref lock and state property in `TimerProvider` to block multiple clicks from triggering concurrent database requests, keeping the timer digit transition clean.
 - **Mobile Grid & Sidebar Alignment**: Fixed vertical/horizontal viewport overflow issues by replacing default grid layouts with flexible flexboxes, and set the sidebar to `sticky top-0 h-screen` to lock its height.
 
+## Milestone 8 - Logo & Production SEO Setup
+
+Added production-grade brand resources and search engine optimization configurations:
+- **Favicon & Icon Setup**: Integrated the custom 3D stopwatch mascot logo into `app/favicon.ico`, `app/icon.png`, `app/apple-icon.png`, and `public/logo.png` to support browsers, PWAs, iOS homescreens, and dynamic custom rendering.
+- **Logo Component & AppShell Integration**: Created a reusable `<Logo>` component inside `components/Logo.tsx` and updated `components/layout/AppShell.tsx` to mount it in the desktop sidebar and mobile headers.
+- **SEO Metadata**: Configured layout meta titles, templates, base URL canonical alternates, Open Graph specs, and Twitter Cards to expand links into rich previews on social platforms.
+- **Sitemap & Robots**: Created `app/sitemap.ts` and `app/robots.ts` to catalog public pages and block search crawlers from scraping user directories.
+
+
