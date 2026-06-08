@@ -3,6 +3,8 @@
 import { Maximize2, Pause, Play } from "lucide-react";
 import { motion } from "framer-motion";
 
+import { cn } from "@/lib/utils";
+
 import { useTimer } from "@/hooks/useTimer";
 import { formatClock, formatDurationCompact } from "@/lib/timer";
 import { useTimerStore } from "@/stores/useTimerStore";
@@ -68,25 +70,28 @@ export function TimerPanel() {
             {formatClock(currentElapsedSeconds)}
           </div>
         </motion.div>
-        <div className="grid gap-3 sm:grid-cols-2">
+        <div className="w-full">
           <Button
-            className={isRunning ? "animate-pulse-glow" : ""}
-            disabled={isRunning}
-            onClick={() => void resumeTimer()}
+            className={cn(
+              "w-full py-6 text-lg font-semibold transition-all duration-300",
+              status === "running" ? "animate-pulse-glow" : ""
+            )}
+            onClick={() => {
+              if (status === "running") {
+                void pauseTimer({ showSubjectModal: true });
+              } else {
+                void resumeTimer();
+              }
+            }}
             size="lg"
-            variant="success"
+            variant={status === "running" ? "destructive" : "success"}
           >
-            <Play className="h-5 w-5" />
-            Resume
-          </Button>
-          <Button
-            disabled={!isRunning}
-            onClick={() => void pauseTimer({ showSubjectModal: true })}
-            size="lg"
-            variant="destructive"
-          >
-            <Pause className="h-5 w-5" />
-            Pause
+            {status === "running" ? (
+              <Pause className="mr-2 h-5 w-5" />
+            ) : (
+              <Play className="mr-2 h-5 w-5" />
+            )}
+            {status === "running" ? "Pause" : status === "paused" ? "Resume" : "Start"}
           </Button>
         </div>
       </CardContent>

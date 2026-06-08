@@ -50,14 +50,25 @@ function TimerPopupContent({
         <p className="mt-1 text-sm text-muted-foreground">Today: {formatDurationCompact(todayTotalSeconds)}</p>
       </div>
 
-      <div className="mt-3 flex gap-2">
-        <Button disabled={isRunning} onClick={() => void resumeTimer()} size="sm" variant="success">
-          <Play className="h-4 w-4 mr-1" />
-          Resume
-        </Button>
-        <Button disabled={!isRunning} onClick={() => void pauseTimer({ showSubjectModal: true })} size="sm" variant="destructive">
-          <Pause className="h-4 w-4 mr-1" />
-          Pause
+      <div className="mt-3">
+        <Button
+          className="w-full font-medium"
+          onClick={() => {
+            if (status === "running") {
+              void pauseTimer({ showSubjectModal: true });
+            } else {
+              void resumeTimer();
+            }
+          }}
+          size="sm"
+          variant={status === "running" ? "destructive" : "success"}
+        >
+          {status === "running" ? (
+            <Pause className="mr-1.5 h-4 w-4" />
+          ) : (
+            <Play className="mr-1.5 h-4 w-4" />
+          )}
+          {status === "running" ? "Pause" : status === "paused" ? "Resume" : "Start"}
         </Button>
       </div>
     </div>
