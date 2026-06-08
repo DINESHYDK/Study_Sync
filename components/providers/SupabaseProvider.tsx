@@ -4,10 +4,8 @@ import type { User } from "@supabase/supabase-js";
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
 
 import { isSupabaseConfigured } from "@/lib/supabase/config";
-import { createSupabaseBrowserClient } from "@/lib/supabase/client";
+import { createSupabaseBrowserClient, type BrowserSupabaseClient } from "@/lib/supabase/client";
 import { demoProfile, useUserStore, type UserProfile } from "@/stores/useUserStore";
-
-type BrowserSupabaseClient = ReturnType<typeof createSupabaseBrowserClient>;
 
 type SupabaseContextValue = {
   supabase: BrowserSupabaseClient;

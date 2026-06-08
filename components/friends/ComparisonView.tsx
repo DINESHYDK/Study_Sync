@@ -4,6 +4,7 @@ import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
+import { motion } from "framer-motion";
 
 import { UserAvatar } from "@/components/avatar/UserAvatar";
 import { useSupabase } from "@/components/providers/SupabaseProvider";
@@ -69,14 +70,14 @@ function winnerText(left: UserDayData, right: UserDayData, metric: Metric) {
   const rightScore = scoreFor(right, metric);
 
   if (leftScore === rightScore) {
-    return "It's a tie!";
+    return "🤝 It's a tie!";
   }
 
   const winner = leftScore > rightScore ? left : right;
   const difference = Math.abs(leftScore - rightScore);
   const formattedDifference = metric === "study_time" ? formatDurationCompact(difference) : `${difference} task${difference === 1 ? "" : "s"}`;
 
-  return `${winner.profile.full_name || winner.profile.email} wins by ${formattedDifference}!`;
+  return `🏆 ${winner.profile.full_name || winner.profile.email} wins by ${formattedDifference}!`;
 }
 
 function ComparisonColumn({ data, highlighted }: { data: UserDayData; highlighted: boolean }) {
@@ -84,8 +85,18 @@ function ComparisonColumn({ data, highlighted }: { data: UserDayData; highlighte
   const completedTodos = data.todos.filter((todo) => todo.is_completed).length;
 
   return (
-    <div className={highlighted ? "rounded-2xl shadow-[0_0_44px_rgba(245,158,11,0.24)]" : undefined}>
-      <div className="grid gap-5">
+    <motion.div
+      animate={{
+        boxShadow: highlighted
+          ? "0 0 44px rgba(245, 158, 11, 0.24)"
+          : "0 0 0px rgba(0, 0, 0, 0)",
+        borderColor: highlighted ? "rgba(245, 158, 11, 0.5)" : "rgba(42, 42, 61, 0.5)",
+      }}
+      className="rounded-2xl border bg-card/40 transition-colors"
+      initial={{ boxShadow: "0 0 0px rgba(0, 0, 0, 0)" }}
+      transition={{ duration: 0.5 }}
+    >
+      <div className="grid gap-5 p-5">
         <div className="flex items-center gap-3">
           <UserAvatar profile={data.profile} />
           <div className="min-w-0">
@@ -98,7 +109,7 @@ function ComparisonColumn({ data, highlighted }: { data: UserDayData; highlighte
         <SessionSegmentList readOnly segments={data.segments} title="Segments" />
         <TodoList readOnly todos={data.todos} title="Tasks" />
       </div>
-    </div>
+    </motion.div>
   );
 }
 

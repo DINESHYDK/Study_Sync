@@ -61,7 +61,7 @@ export function OnboardingModal() {
         </div>
         <DialogFooter>
           <Button disabled={isSubmitting} onClick={() => void handleDismiss()}>
-            Got it, let's start
+            {"Got it, let's start"}
           </Button>
         </DialogFooter>
       </DialogContent>

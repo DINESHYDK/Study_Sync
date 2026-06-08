@@ -52,7 +52,7 @@ function EditableSubject({
 
   return (
     <button
-      className="inline-flex max-w-full items-center gap-2 rounded-lg text-left font-medium text-foreground hover:text-violet-200"
+      className="inline-flex max-w-full items-center gap-2 rounded-lg text-left font-medium text-foreground hover:text-[#6c63ff]"
       onClick={() => setEditing(true)}
       type="button"
     >

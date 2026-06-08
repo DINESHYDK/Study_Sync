@@ -41,7 +41,7 @@ export function SubjectNameModal() {
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Name this session</DialogTitle>
-          <DialogDescription>Keep "General" or add the subject you just studied.</DialogDescription>
+          <DialogDescription>{"Keep \"General\" or add the subject you just studied."}</DialogDescription>
         </DialogHeader>
         <form className="grid gap-4" onSubmit={handleSubmit}>
           <Input autoFocus maxLength={80} onChange={(event) => setSubject(event.target.value)} value={subject} />

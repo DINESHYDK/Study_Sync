@@ -285,17 +285,17 @@ export function TimerProvider({ children }: { children: React.ReactNode }) {
       }
 
       const endedAt = options?.endedAt ?? new Date().toISOString();
-      const today = todayLocalDate();
+      const segmentDate = activeStartedAt ? activeStartedAt.slice(0, 10) : todayLocalDate();
 
       if (!isConfigured) {
-        const segments = readDemoSegments(today);
+        const segments = readDemoSegments(segmentDate);
         const updatedSegments = segments.map((segment) =>
           segment.id === segmentId
             ? { ...segment, ended_at: endedAt, duration_secs: secondsBetween(segment.started_at, endedAt) }
             : segment,
         );
 
-        writeDemoSegments(today, updatedSegments);
+        writeDemoSegments(segmentDate, updatedSegments);
         markSegmentPaused(segmentId, endedAt);
         clearActiveSegment();
 
@@ -335,7 +335,7 @@ export function TimerProvider({ children }: { children: React.ReactNode }) {
         toast.info(options.toastMessage);
       }
     },
-    [activeSegmentId, isConfigured, markSegmentPaused, openSubjectModal, profile, supabase],
+    [activeSegmentId, activeStartedAt, isConfigured, markSegmentPaused, openSubjectModal, profile, supabase],
   );
 
   const updateSegmentSubject = useCallback(
@@ -478,7 +478,10 @@ export function TimerProvider({ children }: { children: React.ReactNode }) {
     const startedDate = activeStartedAt.slice(0, 10);
     const intervalId = window.setInterval(() => {
       if (todayLocalDate() !== startedDate) {
+        const [year, month, day] = startedDate.split("-").map(Number);
+        const endOfDayLocal = new Date(year, month - 1, day, 23, 59, 59);
         void pauseTimer({
+          endedAt: endOfDayLocal.toISOString(),
           showSubjectModal: false,
           toastMessage: "Timer auto-paused at midnight",
         });

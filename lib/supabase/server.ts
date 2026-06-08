@@ -1,5 +1,5 @@
 import { createServerClient, type CookieOptions } from "@supabase/ssr";
-import { createClient as createSupabaseJsClient } from "@supabase/supabase-js";
+import { createClient as createSupabaseJsClient, SupabaseClient } from "@supabase/supabase-js";
 import { cookies } from "next/headers";
 
 import {
@@ -10,13 +10,13 @@ import {
 } from "@/lib/supabase/config";
 import type { Database } from "@/types/database";
 
-type SupabaseServiceClient = ReturnType<typeof createSupabaseJsClient<Database>>;
+type SupabaseServiceClient = SupabaseClient<Database>;
 
 export function createSupabaseServerClient() {
   const cookieStore = cookies();
   const { url, anonKey } = publicSupabaseConfig();
 
-  return createServerClient<Database>(url, anonKey, {
+  return createServerClient(url, anonKey, {
     cookies: {
       get(name: string) {
         return cookieStore.get(name)?.value;
@@ -36,7 +36,7 @@ export function createSupabaseServerClient() {
         }
       },
     },
-  });
+  }) as unknown as SupabaseClient<Database>;
 }
 
 export function createSupabaseServiceClient(): SupabaseServiceClient | null {
