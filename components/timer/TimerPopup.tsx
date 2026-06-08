@@ -246,7 +246,7 @@ export function TimerPopup() {
       }}
     >
       <div
-        className="flex cursor-move items-center justify-between border-b border-border bg-secondary/60 px-3 py-2"
+        className="flex cursor-move items-center justify-between border-b border-border bg-secondary/60 px-3 py-2 touch-none"
         onPointerDown={(event) => handlePointerDown(event, "move")}
         onPointerMove={handlePointerMove}
         onPointerUp={handlePointerUp}
@@ -278,7 +278,7 @@ export function TimerPopup() {
       />
 
       <div
-        className="absolute bottom-1 right-1 h-5 w-5 cursor-nwse-resize rounded-md text-muted-foreground"
+        className="absolute bottom-1 right-1 h-5 w-5 cursor-nwse-resize rounded-md text-muted-foreground touch-none"
         onPointerDown={(event) => handlePointerDown(event, "resize")}
         onPointerMove={handlePointerMove}
         onPointerUp={handlePointerUp}

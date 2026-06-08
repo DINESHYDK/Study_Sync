@@ -34,6 +34,7 @@ type TimerStore = {
   segments: TimerSegment[];
   isPopupOpen: boolean;
   pipWindow: Window | null;
+  isFullscreen: boolean;
   popupState: TimerPopupState;
   subjectModalSegmentId: string | null;
   isHydrated: boolean;
@@ -46,6 +47,7 @@ type TimerStore = {
   resetTimer: () => void;
   setPopupOpen: (isPopupOpen: boolean) => void;
   setPipWindow: (pipWindow: Window | null) => void;
+  setFullscreen: (isFullscreen: boolean) => void;
   setPopupState: (popupState: TimerPopupState) => void;
   openSubjectModal: (segmentId: string) => void;
   closeSubjectModal: () => void;
@@ -61,6 +63,7 @@ export const useTimerStore = create<TimerStore>((set, get) => ({
   segments: [],
   isPopupOpen: false,
   pipWindow: null,
+  isFullscreen: false,
   popupState: defaultPopupState,
   subjectModalSegmentId: null,
   isHydrated: false,
@@ -153,6 +156,7 @@ export const useTimerStore = create<TimerStore>((set, get) => ({
     }),
   setPopupOpen: (isPopupOpen) => set({ isPopupOpen }),
   setPipWindow: (pipWindow) => set({ pipWindow }),
+  setFullscreen: (isFullscreen) => set({ isFullscreen }),
   setPopupState: (popupState) => set({ popupState }),
   openSubjectModal: (subjectModalSegmentId) => set({ subjectModalSegmentId }),
   closeSubjectModal: () => set({ subjectModalSegmentId: null }),

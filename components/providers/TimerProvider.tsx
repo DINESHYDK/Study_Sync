@@ -464,23 +464,12 @@ export function TimerProvider({ children }: { children: React.ReactNode }) {
       }
     }
 
-    function handlePageHide() {
-      if (status === "running") {
-        void pauseTimer({
-          showSubjectModal: false,
-          toastMessage: "Timer auto-paused",
-        });
-      }
-    }
-
     document.addEventListener("visibilitychange", handleVisibilityChange);
     window.addEventListener("beforeunload", handleBeforeUnload);
-    window.addEventListener("pagehide", handlePageHide);
 
     return () => {
       document.removeEventListener("visibilitychange", handleVisibilityChange);
       window.removeEventListener("beforeunload", handleBeforeUnload);
-      window.removeEventListener("pagehide", handlePageHide);
     };
   }, [activeSegmentId, isConfigured, pauseTimer, status, tick]);
 

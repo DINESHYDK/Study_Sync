@@ -1,6 +1,6 @@
 "use client";
 
-import { Maximize2, Pause, Play } from "lucide-react";
+import { Maximize2, Pause, Play, PictureInPicture2 } from "lucide-react";
 import { motion } from "framer-motion";
 
 import { cn } from "@/lib/utils";
@@ -20,6 +20,7 @@ export function TimerPanel() {
   const todayTotalSeconds = useTimerStore((state) => state.todayTotalSeconds);
   const setPopupOpen = useTimerStore((state) => state.setPopupOpen);
   const setPipWindow = useTimerStore((state) => state.setPipWindow);
+  const setFullscreen = useTimerStore((state) => state.setFullscreen);
   const isRunning = status === "running";
 
   const handlePopOut = async () => {
@@ -51,12 +52,21 @@ export function TimerPanel() {
           <Badge variant={isRunning ? "success" : "secondary"}>{isRunning ? "Running" : status === "paused" ? "Paused" : "Idle"}</Badge>
           <Tooltip>
             <TooltipTrigger asChild>
-              <Button onClick={handlePopOut} size="icon" variant="outline">
-                <Maximize2 className="h-4 w-4" />
-                <span className="sr-only">Open timer popup</span>
+              <Button onClick={handlePopOut} size="icon" variant="outline" title="Pop out timer">
+                <PictureInPicture2 className="h-4 w-4" />
+                <span className="sr-only">Pop out timer</span>
               </Button>
             </TooltipTrigger>
             <TooltipContent>Pop out timer</TooltipContent>
+          </Tooltip>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button onClick={() => setFullscreen(true)} size="icon" variant="outline" title="Fullscreen focus mode">
+                <Maximize2 className="h-4 w-4" />
+                <span className="sr-only">Fullscreen focus mode</span>
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>Fullscreen focus mode</TooltipContent>
           </Tooltip>
         </div>
       </CardHeader>

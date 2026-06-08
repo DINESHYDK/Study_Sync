@@ -10,6 +10,7 @@ import { SubjectNameModal } from "@/components/modals/SubjectNameModal";
 import { UserAvatar } from "@/components/avatar/UserAvatar";
 import { useSupabase } from "@/components/providers/SupabaseProvider";
 import { TimerPopup } from "@/components/timer/TimerPopup";
+import { TimerFullscreen } from "@/components/timer/TimerFullscreen";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
@@ -131,6 +132,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
       <main className="min-w-0 px-4 py-6 sm:px-6 lg:px-8">{children}</main>
       <TimerPopup />
+      <TimerFullscreen />
       <SubjectNameModal />
       <OnboardingModal />
     </div>
