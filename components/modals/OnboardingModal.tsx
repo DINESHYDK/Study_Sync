@@ -49,7 +49,7 @@ export function OnboardingModal() {
   }
 
   return (
-    <Dialog open={shouldOpen} onOpenChange={(open) => (!open ? void handleDismiss() : undefined)}>
+    <Dialog open={shouldOpen} onOpenChange={(open) => (!open && !isSubmitting ? void handleDismiss() : undefined)}>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Welcome to StudySync!</DialogTitle>
@@ -67,7 +67,7 @@ export function OnboardingModal() {
         </div>
         <DialogFooter>
           <Button disabled={isSubmitting} onClick={() => void handleDismiss()}>
-            {"Got it, let's start"}
+            {isSubmitting ? "Loading..." : "Got it, let's start"}
           </Button>
         </DialogFooter>
       </DialogContent>

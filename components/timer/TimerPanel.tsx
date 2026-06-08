@@ -14,7 +14,7 @@ import { Badge } from "@/components/ui/badge";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 
 export function TimerPanel() {
-  const { resumeTimer, pauseTimer } = useTimer();
+  const { resumeTimer, pauseTimer, isToggling } = useTimer();
   const status = useTimerStore((state) => state.status);
   const currentElapsedSeconds = useTimerStore((state) => state.currentElapsedSeconds);
   const todayTotalSeconds = useTimerStore((state) => state.todayTotalSeconds);
@@ -86,6 +86,7 @@ export function TimerPanel() {
               "w-full py-6 text-lg font-semibold transition-all duration-300",
               status === "running" ? "animate-pulse-glow" : ""
             )}
+            disabled={isToggling}
             onClick={() => {
               if (status === "running") {
                 void pauseTimer({ showSubjectModal: true });
@@ -101,7 +102,17 @@ export function TimerPanel() {
             ) : (
               <Play className="mr-2 h-5 w-5" />
             )}
-            {status === "running" ? "Pause" : status === "paused" ? "Resume" : "Start"}
+            {isToggling
+              ? status === "running"
+                ? "Pausing..."
+                : status === "paused"
+                ? "Resuming..."
+                : "Starting..."
+              : status === "running"
+              ? "Pause"
+              : status === "paused"
+              ? "Resume"
+              : "Start"}
           </Button>
         </div>
       </CardContent>

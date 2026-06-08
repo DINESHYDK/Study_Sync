@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
 
 import { useSupabase } from "@/components/providers/SupabaseProvider";
@@ -136,6 +136,8 @@ export function TimerProvider({ children }: { children: React.ReactNode }) {
   const openSubjectModal = useTimerStore((state) => state.openSubjectModal);
   const resetTimer = useTimerStore((state) => state.resetTimer);
   const warnedLongRunRef = useRef(false);
+  const [isToggling, setToggling] = useState(false);
+  const isTogglingRef = useRef(false);
 
   const loadToday = useCallback(async () => {
     if (!profile) {
@@ -218,139 +220,157 @@ export function TimerProvider({ children }: { children: React.ReactNode }) {
   }, [isConfigured, profile, replaceSegments, resetTimer, supabase]);
 
   const resumeTimer = useCallback(async () => {
+    if (isTogglingRef.current) return;
     if (!profile) {
       toast.error("Sign in before starting a timer.");
       return;
     }
 
-    const today = todayLocalDate();
+    isTogglingRef.current = true;
+    setToggling(true);
 
-    if (!isConfigured) {
-      const segments = readDemoSegments(today);
-      const activeSegment = segments.find((segment) => segment.ended_at === null);
+    try {
+      const today = todayLocalDate();
 
-      if (activeSegment) {
-        saveActiveSegment(activeSegment.id);
-        setRunningSegment(activeSegment);
+      if (!isConfigured) {
+        const segments = readDemoSegments(today);
+        const activeSegment = segments.find((segment) => segment.ended_at === null);
+
+        if (activeSegment) {
+          saveActiveSegment(activeSegment.id);
+          setRunningSegment(activeSegment);
+          return;
+        }
+
+        const segment = createDemoSegment(profile.id);
+        const nextSegments = [...segments, segment];
+        writeDemoSegments(today, nextSegments);
+        saveActiveSegment(segment.id);
+        setRunningSegment(segment);
         return;
       }
 
-      const segment = createDemoSegment(profile.id);
-      const nextSegments = [...segments, segment];
-      writeDemoSegments(today, nextSegments);
+      const { data: openSegment, error: openSegmentError } = await supabase
+        .from("session_segments")
+        .select("*")
+        .eq("user_id", profile.id)
+        .is("ended_at", null)
+        .maybeSingle();
+
+      if (openSegmentError) {
+        toast.error(openSegmentError.message);
+        return;
+      }
+
+      if (openSegment) {
+        saveActiveSegment(openSegment.id);
+        setRunningSegment(openSegment);
+        return;
+      }
+
+      const { data: session, error: sessionError } = await supabase
+        .from("study_sessions")
+        .upsert({ user_id: profile.id, date: today }, { onConflict: "user_id,date" })
+        .select("id")
+        .single();
+
+      if (sessionError) {
+        toast.error(sessionError.message);
+        return;
+      }
+
+      const startedAt = new Date().toISOString();
+      const { data: segment, error: segmentError } = await supabase
+        .from("session_segments")
+        .insert({
+          session_id: session.id,
+          user_id: profile.id,
+          subject_name: "General",
+          started_at: startedAt,
+          ended_at: null,
+        })
+        .select("*")
+        .single();
+
+      if (segmentError) {
+        toast.error(segmentError.message);
+        return;
+      }
+
       saveActiveSegment(segment.id);
       setRunningSegment(segment);
-      return;
+    } finally {
+      isTogglingRef.current = false;
+      setToggling(false);
     }
-
-    const { data: openSegment, error: openSegmentError } = await supabase
-      .from("session_segments")
-      .select("*")
-      .eq("user_id", profile.id)
-      .is("ended_at", null)
-      .maybeSingle();
-
-    if (openSegmentError) {
-      toast.error(openSegmentError.message);
-      return;
-    }
-
-    if (openSegment) {
-      saveActiveSegment(openSegment.id);
-      setRunningSegment(openSegment);
-      return;
-    }
-
-    const { data: session, error: sessionError } = await supabase
-      .from("study_sessions")
-      .upsert({ user_id: profile.id, date: today }, { onConflict: "user_id,date" })
-      .select("id")
-      .single();
-
-    if (sessionError) {
-      toast.error(sessionError.message);
-      return;
-    }
-
-    const startedAt = new Date().toISOString();
-    const { data: segment, error: segmentError } = await supabase
-      .from("session_segments")
-      .insert({
-        session_id: session.id,
-        user_id: profile.id,
-        subject_name: "General",
-        started_at: startedAt,
-        ended_at: null,
-      })
-      .select("*")
-      .single();
-
-    if (segmentError) {
-      toast.error(segmentError.message);
-      return;
-    }
-
-    saveActiveSegment(segment.id);
-    setRunningSegment(segment);
   }, [isConfigured, profile, setRunningSegment, supabase]);
 
   const pauseTimer = useCallback(
     async (options?: PauseTimerOptions) => {
+      if (isTogglingRef.current) return;
       const segmentId = activeSegmentId;
 
       if (!segmentId || !profile) {
         return;
       }
 
-      const endedAt = options?.endedAt ?? new Date().toISOString();
-      const segmentDate = activeStartedAt ? activeStartedAt.slice(0, 10) : todayLocalDate();
+      isTogglingRef.current = true;
+      setToggling(true);
 
-      if (!isConfigured) {
-        const segments = readDemoSegments(segmentDate);
-        const updatedSegments = segments.map((segment) =>
-          segment.id === segmentId
-            ? { ...segment, ended_at: endedAt, duration_secs: secondsBetween(segment.started_at, endedAt) }
-            : segment,
-        );
+      try {
+        const endedAt = options?.endedAt ?? new Date().toISOString();
+        const segmentDate = activeStartedAt ? activeStartedAt.slice(0, 10) : todayLocalDate();
 
-        writeDemoSegments(segmentDate, updatedSegments);
+        if (!isConfigured) {
+          const segments = readDemoSegments(segmentDate);
+          const updatedSegments = segments.map((segment) =>
+            segment.id === segmentId
+              ? { ...segment, ended_at: endedAt, duration_secs: secondsBetween(segment.started_at, endedAt) }
+              : segment,
+          );
+
+          writeDemoSegments(segmentDate, updatedSegments);
+          markSegmentPaused(segmentId, endedAt);
+          clearActiveSegment();
+
+          if (options?.showSubjectModal !== false) {
+            openSubjectModal(segmentId);
+          }
+
+          if (options?.toastMessage) {
+            toast.info(options.toastMessage);
+          }
+
+          return;
+        }
+
+        const { data: segment, error } = await supabase
+          .from("session_segments")
+          .update({ ended_at: endedAt })
+          .eq("id", segmentId)
+          .eq("user_id", profile.id)
+          .is("ended_at", null)
+          .select("*")
+          .maybeSingle();
+
+        if (error) {
+          toast.error(error.message);
+          return;
+        }
+
         markSegmentPaused(segmentId, endedAt);
         clearActiveSegment();
 
-        if (options?.showSubjectModal !== false) {
-          openSubjectModal(segmentId);
+        if (segment && options?.showSubjectModal !== false) {
+          openSubjectModal(segment.id);
         }
 
         if (options?.toastMessage) {
           toast.info(options.toastMessage);
         }
-
-        return;
-      }
-
-      const { data: segment, error } = await supabase
-        .from("session_segments")
-        .update({ ended_at: endedAt })
-        .eq("id", segmentId)
-        .eq("user_id", profile.id)
-        .is("ended_at", null)
-        .select("*")
-        .maybeSingle();
-
-      if (error) {
-        toast.error(error.message);
-        return;
-      }
-
-      markSegmentPaused(segmentId, endedAt);
-      clearActiveSegment();
-
-      if (segment && options?.showSubjectModal !== false) {
-        openSubjectModal(segment.id);
-      }
-
-      if (options?.toastMessage) {
-        toast.info(options.toastMessage);
+      } finally {
+        isTogglingRef.current = false;
+        setToggling(false);
       }
     },
     [activeSegmentId, activeStartedAt, isConfigured, markSegmentPaused, openSubjectModal, profile, supabase],
@@ -509,8 +529,9 @@ export function TimerProvider({ children }: { children: React.ReactNode }) {
       resumeTimer,
       pauseTimer,
       updateSegmentSubject,
+      isToggling,
     }),
-    [loadToday, pauseTimer, resumeTimer, updateSegmentSubject],
+    [loadToday, pauseTimer, resumeTimer, updateSegmentSubject, isToggling],
   );
 
   return <TimerContext.Provider value={value}>{children}</TimerContext.Provider>;

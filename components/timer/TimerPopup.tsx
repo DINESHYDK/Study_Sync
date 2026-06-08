@@ -29,6 +29,7 @@ interface TimerPopupContentProps {
   resumeTimer: () => void;
   pauseTimer: (options?: { showSubjectModal?: boolean }) => void;
   setPopupOpen: (isOpen: boolean) => void;
+  isToggling: boolean;
 }
 
 function TimerPopupContent({
@@ -39,6 +40,7 @@ function TimerPopupContent({
   todayTotalSeconds,
   resumeTimer,
   pauseTimer,
+  isToggling,
 }: TimerPopupContentProps) {
   return (
     <div className={cn("flex flex-1 flex-col justify-between p-4", isPip && "bg-card text-card-foreground h-full")}>
@@ -53,6 +55,7 @@ function TimerPopupContent({
       <div className="mt-3">
         <Button
           className="w-full font-medium"
+          disabled={isToggling}
           onClick={() => {
             if (status === "running") {
               void pauseTimer({ showSubjectModal: true });
@@ -68,7 +71,17 @@ function TimerPopupContent({
           ) : (
             <Play className="mr-1.5 h-4 w-4" />
           )}
-          {status === "running" ? "Pause" : status === "paused" ? "Resume" : "Start"}
+          {isToggling
+            ? status === "running"
+              ? "Pausing..."
+              : status === "paused"
+              ? "Resuming..."
+              : "Starting..."
+            : status === "running"
+            ? "Pause"
+            : status === "paused"
+            ? "Resume"
+            : "Start"}
         </Button>
       </div>
     </div>
@@ -76,7 +89,7 @@ function TimerPopupContent({
 }
 
 export function TimerPopup() {
-  const { resumeTimer, pauseTimer } = useTimer();
+  const { resumeTimer, pauseTimer, isToggling } = useTimer();
   const isPopupOpen = useTimerStore((state) => state.isPopupOpen);
   const setPopupOpen = useTimerStore((state) => state.setPopupOpen);
   const popupState = useTimerStore((state) => state.popupState);
@@ -229,6 +242,7 @@ export function TimerPopup() {
         resumeTimer={resumeTimer}
         pauseTimer={pauseTimer}
         setPopupOpen={setPopupOpen}
+        isToggling={isToggling}
       />,
       pipWindow.document.body
     );
@@ -275,6 +289,7 @@ export function TimerPopup() {
         resumeTimer={resumeTimer}
         pauseTimer={pauseTimer}
         setPopupOpen={setPopupOpen}
+        isToggling={isToggling}
       />
 
       <div

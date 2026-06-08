@@ -57,6 +57,7 @@ function LoginForm() {
                 Email
                 <Input
                   autoComplete="email"
+                  disabled={isSubmitting}
                   onChange={(event) => setEmail(event.target.value)}
                   required
                   type="email"
@@ -67,6 +68,7 @@ function LoginForm() {
                 Password
                 <Input
                   autoComplete="current-password"
+                  disabled={isSubmitting}
                   minLength={8}
                   onChange={(event) => setPassword(event.target.value)}
                   required

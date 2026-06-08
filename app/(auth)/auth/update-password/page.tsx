@@ -55,6 +55,7 @@ export default function UpdatePasswordPage() {
               New Password
               <Input
                 autoComplete="new-password"
+                disabled={isSubmitting}
                 minLength={8}
                 onChange={(event) => setPassword(event.target.value)}
                 required
@@ -66,6 +67,7 @@ export default function UpdatePasswordPage() {
               Confirm Password
               <Input
                 autoComplete="new-password"
+                disabled={isSubmitting}
                 minLength={8}
                 onChange={(event) => setConfirmPassword(event.target.value)}
                 required

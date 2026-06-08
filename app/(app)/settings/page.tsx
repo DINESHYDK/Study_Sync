@@ -27,6 +27,11 @@ export default function SettingsPage() {
   const [friendCode, setFriendCode] = useState("");
   const [friendError, setFriendError] = useState<string | null>(null);
   const [isSavingName, setSavingName] = useState(false);
+  const [isUpdatingAvatar, setUpdatingAvatar] = useState(false);
+  const [isAddingFriend, setAddingFriend] = useState(false);
+  const [processingRequestIds, setProcessingRequestIds] = useState<string[]>([]);
+  const [isResettingPassword, setResettingPassword] = useState(false);
+  const [isDeletingAccount, setDeletingAccount] = useState(false);
 
   useEffect(() => {
     if (profile) {
@@ -77,14 +82,18 @@ export default function SettingsPage() {
   }
 
   async function selectAvatar(avatarId: string | null) {
+    if (isUpdatingAvatar) return;
+    setUpdatingAvatar(true);
     updateProfile({ avatar_id: avatarId });
 
     if (!isConfigured) {
+      setUpdatingAvatar(false);
       return;
     }
 
     if (currentProfile.referral_code === "PENDING") {
       toast.error("Your user profile is missing from the database. Please make sure the profiles table is configured.");
+      setUpdatingAvatar(false);
       return;
     }
 
@@ -92,7 +101,11 @@ export default function SettingsPage() {
 
     if (error) {
       toast.error(error.message);
+      if (profile) {
+        updateProfile({ avatar_id: profile.avatar_id });
+      }
     }
+    setUpdatingAvatar(false);
   }
 
   async function copyReferralCode() {
@@ -102,7 +115,10 @@ export default function SettingsPage() {
 
   async function sendFriendRequest(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    if (isAddingFriend) return;
+    setAddingFriend(true);
     const result = await addFriendByCode(friendCode);
+    setAddingFriend(false);
 
     if (result) {
       setFriendError(result);
@@ -113,15 +129,34 @@ export default function SettingsPage() {
     setFriendError(null);
   }
 
+  async function handleAccept(requestId: string) {
+    if (processingRequestIds.includes(requestId)) return;
+    setProcessingRequestIds((prev) => [...prev, requestId]);
+    await acceptRequest(requestId);
+    setProcessingRequestIds((prev) => prev.filter((id) => id !== requestId));
+  }
+
+  async function handleDecline(requestId: string) {
+    if (processingRequestIds.includes(requestId)) return;
+    setProcessingRequestIds((prev) => [...prev, requestId]);
+    await declineRequest(requestId);
+    setProcessingRequestIds((prev) => prev.filter((id) => id !== requestId));
+  }
+
   async function sendPasswordReset() {
     if (!isConfigured) {
       toast.info("Configure Supabase before sending password reset emails.");
       return;
     }
 
+    if (isResettingPassword) return;
+    setResettingPassword(true);
+
     const { error } = await supabase.auth.resetPasswordForEmail(currentProfile.email, {
       redirectTo: `${appUrl()}/auth/update-password`,
     });
+
+    setResettingPassword(false);
 
     if (error) {
       toast.error(error.message);
@@ -138,10 +173,14 @@ export default function SettingsPage() {
       return;
     }
 
+    if (isDeletingAccount) return;
+    setDeletingAccount(true);
+
     const response = await fetch("/api/account/delete", { method: "POST" });
 
     if (!response.ok) {
       toast.error("Could not delete account.");
+      setDeletingAccount(false);
       return;
     }
 
@@ -149,6 +188,7 @@ export default function SettingsPage() {
       await supabase.auth.signOut();
     }
 
+    setDeletingAccount(false);
     router.push("/login");
     router.refresh();
   }
@@ -173,17 +213,20 @@ export default function SettingsPage() {
             </div>
           </div>
           <form className="grid gap-3 sm:grid-cols-[1fr_auto]" onSubmit={saveName}>
-            <Input onChange={(event) => setFullName(event.target.value)} value={fullName} />
+            <Input disabled={isSavingName} onChange={(event) => setFullName(event.target.value)} value={fullName} />
             <Button disabled={isSavingName} type="submit">
               <Check className="h-4 w-4" />
-              Save
+              {isSavingName ? "Saving..." : "Save"}
             </Button>
           </form>
           <div className="grid gap-3">
             <p className="text-sm font-semibold">Avatar</p>
             <div className="grid grid-cols-3 gap-2 sm:grid-cols-6">
               <button
-                className={`rounded-xl border p-3 text-sm ${profile.avatar_id === null ? "border-violet-400 bg-violet-500/10" : "border-border bg-secondary"}`}
+                className={`rounded-xl border p-3 text-sm transition ${
+                  profile.avatar_id === null ? "border-violet-400 bg-violet-500/10" : "border-border bg-secondary"
+                }`}
+                disabled={isUpdatingAvatar}
                 onClick={() => void selectAvatar(null)}
                 type="button"
               >
@@ -194,6 +237,7 @@ export default function SettingsPage() {
                   className={`rounded-xl border p-3 text-center transition hover:border-violet-400 ${
                     profile.avatar_id === avatar.id ? "border-violet-400 bg-violet-500/10" : "border-border bg-secondary"
                   }`}
+                  disabled={isUpdatingAvatar}
                   key={avatar.id}
                   onClick={() => void selectAvatar(avatar.id)}
                   type="button"
@@ -230,13 +274,14 @@ export default function SettingsPage() {
           <form className="grid gap-3 sm:grid-cols-[1fr_auto]" onSubmit={sendFriendRequest}>
             <Input
               autoCapitalize="characters"
+              disabled={isAddingFriend}
               onChange={(event) => setFriendCode(event.target.value)}
               placeholder="Paste referral code"
               value={friendCode}
             />
-            <Button type="submit">
+            <Button disabled={isAddingFriend} type="submit">
               <UserPlus className="h-4 w-4" />
-              Add Friend
+              {isAddingFriend ? "Adding..." : "Add Friend"}
             </Button>
           </form>
           {friendError ? <p className="mt-3 rounded-xl border border-destructive/30 bg-destructive/10 p-3 text-sm text-red-100">{friendError}</p> : null}
@@ -262,11 +307,21 @@ export default function SettingsPage() {
                     </div>
                   </div>
                   <div className="flex gap-2">
-                    <Button onClick={() => void acceptRequest(request.id)} size="sm" variant="success">
-                      Accept
+                    <Button 
+                      disabled={processingRequestIds.includes(request.id)} 
+                      onClick={() => void handleAccept(request.id)} 
+                      size="sm" 
+                      variant="success"
+                    >
+                      {processingRequestIds.includes(request.id) ? "Accepting..." : "Accept"}
                     </Button>
-                    <Button onClick={() => void declineRequest(request.id)} size="sm" variant="ghost">
-                      Decline
+                    <Button 
+                      disabled={processingRequestIds.includes(request.id)} 
+                      onClick={() => void handleDecline(request.id)} 
+                      size="sm" 
+                      variant="ghost"
+                    >
+                      {processingRequestIds.includes(request.id) ? "Declining..." : "Decline"}
                     </Button>
                   </div>
                 </div>
@@ -281,13 +336,13 @@ export default function SettingsPage() {
           <CardTitle>Account</CardTitle>
         </CardHeader>
         <CardContent className="grid gap-3 sm:grid-cols-2">
-          <Button onClick={() => void sendPasswordReset()} variant="outline">
+          <Button disabled={isResettingPassword} onClick={() => void sendPasswordReset()} variant="outline">
             <KeyRound className="h-4 w-4" />
-            Change Password
+            {isResettingPassword ? "Sending..." : "Change Password"}
           </Button>
-          <Button onClick={() => void deleteAccount()} variant="destructive">
+          <Button disabled={isDeletingAccount} onClick={() => void deleteAccount()} variant="destructive">
             <Trash2 className="h-4 w-4" />
-            Delete Account
+            {isDeletingAccount ? "Deleting..." : "Delete Account"}
           </Button>
         </CardContent>
       </Card>

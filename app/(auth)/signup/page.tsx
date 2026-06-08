@@ -69,6 +69,7 @@ export default function SignupPage() {
                 Full Name
                 <Input
                   autoComplete="name"
+                  disabled={isSubmitting}
                   onChange={(event) => setFullName(event.target.value)}
                   required
                   value={fullName}
@@ -78,6 +79,7 @@ export default function SignupPage() {
                 Email
                 <Input
                   autoComplete="email"
+                  disabled={isSubmitting}
                   onChange={(event) => setEmail(event.target.value)}
                   required
                   type="email"
@@ -88,6 +90,7 @@ export default function SignupPage() {
                 Password
                 <Input
                   autoComplete="new-password"
+                  disabled={isSubmitting}
                   minLength={8}
                   onChange={(event) => setPassword(event.target.value)}
                   required
@@ -99,6 +102,7 @@ export default function SignupPage() {
                 Confirm Password
                 <Input
                   autoComplete="new-password"
+                  disabled={isSubmitting}
                   minLength={8}
                   onChange={(event) => setConfirmPassword(event.target.value)}
                   required

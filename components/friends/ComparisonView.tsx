@@ -203,7 +203,32 @@ export function ComparisonView({ friendId }: { friendId: string }) {
         </div>
       </div>
 
-      {left && right ? (
+      {isLoading ? (
+        <div className="grid gap-5 xl:grid-cols-2 min-w-0 w-full animate-pulse">
+          <div className="rounded-2xl border border-border bg-card/20 p-5 space-y-5">
+            <div className="flex items-center gap-3">
+              <div className="h-10 w-10 rounded-full bg-secondary" />
+              <div className="space-y-2 flex-1">
+                <div className="h-4 w-24 bg-secondary rounded" />
+                <div className="h-3 w-32 bg-secondary rounded" />
+              </div>
+            </div>
+            <div className="h-44 bg-secondary/50 rounded-xl" />
+            <div className="h-44 bg-secondary/50 rounded-xl" />
+          </div>
+          <div className="rounded-2xl border border-border bg-card/20 p-5 space-y-5">
+            <div className="flex items-center gap-3">
+              <div className="h-10 w-10 rounded-full bg-secondary" />
+              <div className="space-y-2 flex-1">
+                <div className="h-4 w-24 bg-secondary rounded" />
+                <div className="h-3 w-32 bg-secondary rounded" />
+              </div>
+            </div>
+            <div className="h-44 bg-secondary/50 rounded-xl" />
+            <div className="h-44 bg-secondary/50 rounded-xl" />
+          </div>
+        </div>
+      ) : left && right ? (
         <>
           <div className="rounded-2xl border border-amber-500/30 bg-amber-500/10 p-5 text-center font-heading text-2xl font-semibold text-amber-100">
             {winnerText(left, right, metric)}
@@ -216,7 +241,7 @@ export function ComparisonView({ friendId }: { friendId: string }) {
       ) : (
         <Card>
           <CardContent className="p-6 text-sm text-muted-foreground">
-            {isLoading ? "Loading comparison..." : "No comparison data available."}
+            No comparison data available.
           </CardContent>
         </Card>
       )}

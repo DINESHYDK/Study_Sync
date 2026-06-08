@@ -11,7 +11,7 @@ import { useTimerStore } from "@/stores/useTimerStore";
 import { Button } from "@/components/ui/button";
 
 export function TimerFullscreen() {
-  const { resumeTimer, pauseTimer } = useTimer();
+  const { resumeTimer, pauseTimer, isToggling } = useTimer();
   const isFullscreen = useTimerStore((state) => state.isFullscreen);
   const setFullscreen = useTimerStore((state) => state.setFullscreen);
   const status = useTimerStore((state) => state.status);
@@ -169,6 +169,7 @@ export function TimerFullscreen() {
                 "w-full py-8 text-xl font-bold transition-all duration-300 rounded-2xl shadow-lg",
                 isRunning ? "shadow-red-500/10 hover:shadow-red-500/20" : "shadow-emerald-500/10 hover:shadow-emerald-500/20"
               )}
+              disabled={isToggling}
               onClick={handleToggle}
               size="lg"
               variant={isRunning ? "destructive" : "success"}
@@ -178,7 +179,17 @@ export function TimerFullscreen() {
               ) : (
                 <Play className="mr-3 h-6 w-6" />
               )}
-              {isRunning ? "Pause" : status === "paused" ? "Resume" : "Start"}
+              {isToggling
+                ? isRunning
+                  ? "Pausing..."
+                  : status === "paused"
+                  ? "Resuming..."
+                  : "Starting..."
+                : isRunning
+                ? "Pause"
+                : status === "paused"
+                ? "Resume"
+                : "Start"}
             </Button>
           </div>
         </div>

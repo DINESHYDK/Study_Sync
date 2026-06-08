@@ -99,13 +99,17 @@ export function TodoList({ ownerId, date = todayLocalDate(), readOnly = false, t
   const [todos, setTodos] = useState<TodoRow[]>(externalTodos ?? []);
   const [text, setText] = useState("");
   const [isLoading, setLoading] = useState(false);
+  const [isAdding, setAdding] = useState(false);
+  const [processingTodoIds, setProcessingTodoIds] = useState<string[]>([]);
   const activeOwnerId = ownerId ?? sessionUser?.id ?? "";
+
   const sensors = useSensors(
     useSensor(PointerSensor),
     useSensor(KeyboardSensor, {
       coordinateGetter: sortableKeyboardCoordinates,
     }),
   );
+
   const displayTodos = useMemo(() => orderedTodos(todos), [todos]);
 
   const loadTodos = useCallback(async () => {
@@ -158,7 +162,7 @@ export function TodoList({ ownerId, date = todayLocalDate(), readOnly = false, t
     event.preventDefault();
     const normalizedText = text.trim();
 
-    if (!normalizedText || readOnly || !activeOwnerId) {
+    if (!normalizedText || readOnly || !activeOwnerId || isAdding) {
       return;
     }
 
@@ -177,6 +181,7 @@ export function TodoList({ ownerId, date = todayLocalDate(), readOnly = false, t
     }
 
     const sortOrder = todos.length;
+    setAdding(true);
 
     if (!isConfigured) {
       const now = new Date().toISOString();
@@ -193,6 +198,7 @@ export function TodoList({ ownerId, date = todayLocalDate(), readOnly = false, t
       setTodos(nextTodos);
       writeDemoTodos(date, nextTodos);
       setText("");
+      setAdding(false);
       return;
     }
 
@@ -207,6 +213,8 @@ export function TodoList({ ownerId, date = todayLocalDate(), readOnly = false, t
       .select("*")
       .single();
 
+    setAdding(false);
+
     if (error) {
       toast.error(error.message);
       return;
@@ -217,7 +225,7 @@ export function TodoList({ ownerId, date = todayLocalDate(), readOnly = false, t
   }
 
   async function handleToggle(todo: TodoRow) {
-    if (readOnly) {
+    if (readOnly || processingTodoIds.includes(todo.id)) {
       return;
     }
 
@@ -225,6 +233,7 @@ export function TodoList({ ownerId, date = todayLocalDate(), readOnly = false, t
       return;
     }
 
+    setProcessingTodoIds((current) => [...current, todo.id]);
     const nextCompleted = !todo.is_completed;
     setTodos((current) => current.map((item) => (item.id === todo.id ? { ...item, is_completed: nextCompleted } : item)));
 
@@ -233,6 +242,7 @@ export function TodoList({ ownerId, date = todayLocalDate(), readOnly = false, t
         date,
         todos.map((item) => (item.id === todo.id ? { ...item, is_completed: nextCompleted } : item)),
       );
+      setProcessingTodoIds((current) => current.filter((id) => id !== todo.id));
       return;
     }
 
@@ -242,10 +252,11 @@ export function TodoList({ ownerId, date = todayLocalDate(), readOnly = false, t
       toast.error(error.message);
       setTodos((current) => current.map((item) => (item.id === todo.id ? todo : item)));
     }
+    setProcessingTodoIds((current) => current.filter((id) => id !== todo.id));
   }
 
   async function handleDelete(todo: TodoRow) {
-    if (readOnly) {
+    if (readOnly || processingTodoIds.includes(todo.id)) {
       return;
     }
 
@@ -253,11 +264,13 @@ export function TodoList({ ownerId, date = todayLocalDate(), readOnly = false, t
       return;
     }
 
+    setProcessingTodoIds((current) => [...current, todo.id]);
     const nextTodos = todos.filter((item) => item.id !== todo.id);
     setTodos(nextTodos);
 
     if (!isConfigured) {
       writeDemoTodos(date, nextTodos);
+      setProcessingTodoIds((current) => current.filter((id) => id !== todo.id));
       return;
     }
 
@@ -267,6 +280,7 @@ export function TodoList({ ownerId, date = todayLocalDate(), readOnly = false, t
       toast.error(error.message);
       setTodos(todos);
     }
+    setProcessingTodoIds((current) => current.filter((id) => id !== todo.id));
   }
 
   async function handleDragEnd(event: DragEndEvent) {
@@ -314,19 +328,26 @@ export function TodoList({ ownerId, date = todayLocalDate(), readOnly = false, t
         {!readOnly ? (
           <form className="grid gap-2 sm:grid-cols-[1fr_auto]" onSubmit={handleAdd}>
             <Input
+              disabled={isAdding}
               maxLength={MAX_TEXT_LENGTH}
               onChange={(event) => setText(event.target.value)}
               placeholder="Add a task"
               value={text}
             />
-            <Button disabled={isLoading || todos.length >= MAX_TODOS} type="submit">
+            <Button disabled={isAdding || todos.length >= MAX_TODOS} type="submit">
               <Plus className="h-4 w-4" />
-              Add
+              {isAdding ? "Adding..." : "Add"}
             </Button>
           </form>
         ) : null}
 
-        {displayTodos.length === 0 ? (
+        {isLoading ? (
+          <ul className="grid gap-2 animate-pulse">
+            <li className="h-10 bg-secondary/50 rounded-xl border border-border" />
+            <li className="h-10 bg-secondary/50 rounded-xl border border-border" />
+            <li className="h-10 bg-secondary/50 rounded-xl border border-border" />
+          </ul>
+        ) : displayTodos.length === 0 ? (
           <div className="rounded-2xl border border-dashed border-border p-6 text-sm text-muted-foreground">
             No tasks for this date.
           </div>
@@ -341,6 +362,7 @@ export function TodoList({ ownerId, date = todayLocalDate(), readOnly = false, t
                     onToggle={(item) => void handleToggle(item)}
                     readOnly={readOnly}
                     todo={todo}
+                    isProcessing={processingTodoIds.includes(todo.id)}
                   />
                 ))}
               </ul>
