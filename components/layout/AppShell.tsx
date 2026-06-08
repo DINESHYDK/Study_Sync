@@ -115,7 +115,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="min-h-screen lg:grid lg:grid-cols-[18rem_1fr]">
-      <div className="hidden lg:block">{sidebar}</div>
+      <div className="hidden lg:block sticky top-0 h-screen">{sidebar}</div>
 
       <div className="sticky top-0 z-40 flex items-center justify-between border-b border-border bg-background/85 px-4 py-3 backdrop-blur lg:hidden">
         <Link className="flex items-center gap-2 font-heading text-lg font-semibold" href="/dashboard">
