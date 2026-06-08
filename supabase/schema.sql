@@ -203,15 +203,10 @@ CREATE POLICY "profiles: self read-write"
   WITH CHECK (auth.uid() = id);
 
 DROP POLICY IF EXISTS "profiles: friends can read" ON profiles;
-CREATE POLICY "profiles: friends can read"
+CREATE POLICY "profiles: authenticated read"
   ON profiles FOR SELECT
-  USING (
-    EXISTS (
-      SELECT 1 FROM friendships
-      WHERE (user_a = auth.uid() AND user_b = id)
-         OR (user_b = auth.uid() AND user_a = id)
-    )
-  );
+  TO authenticated
+  USING (true);
 
 DROP POLICY IF EXISTS "sessions: self write" ON study_sessions;
 CREATE POLICY "sessions: self write"
