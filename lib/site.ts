@@ -1,1 +1,1 @@
-export const STUDYSYNC_PUBLIC_URL = "https://study-sync-app.vercel.app";
+export const STUDYSYNC_PUBLIC_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://studysync.dineshydk.dev";
