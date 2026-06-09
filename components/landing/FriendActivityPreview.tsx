@@ -2,8 +2,8 @@ import { Card } from "@/components/ui/card";
 
 const friends = [
   { name: "Dinesh", initials: "D", status: "Running", total: "4h 08m" },
-  { name: "Eswar", initials: "A", status: "Paused", total: "3h 41m" },
-  { name: "Chakri K", initials: "C", status: "Running", total: "2h 57m" },
+  { name: "Eswar", initials: "E", status: "Paused", total: "3h 41m" },
+  { name: "Chakradhar", initials: "C", status: "Running", total: "2h 57m" },
 ] as const;
 
 export function FriendActivityPreview() {

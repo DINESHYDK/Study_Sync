@@ -46,13 +46,13 @@ export function ComparisonPreview() {
         </span>
       </div>
       <div className="mt-6 grid items-center gap-4 sm:grid-cols-[1fr_auto_1fr]">
-        <StatCard initials="Y" name="You" tasks="8 tasks ✓" time="5h 23m" width="88%" />
+        <StatCard initials="D" name="Dinesh" tasks="8 tasks ✓" time="5h 23m" width="88%" />
         <div className="text-center font-heading text-sm font-bold text-[var(--text-muted)]">VS</div>
-        <StatCard initials="A" name="Arjun" tasks="5 tasks ✓" time="3h 41m" width="58%" />
+        <StatCard initials="E" name="Eswar" tasks="5 tasks ✓" time="3h 41m" width="58%" />
       </div>
       <div className="mt-6 flex items-center justify-center gap-2 rounded-2xl border border-amber-400/30 bg-amber-400/10 p-4 text-center font-heading text-lg font-semibold text-amber-100">
         <Trophy className="h-5 w-5 text-amber-400 shrink-0" />
-        You win by 1h 42m today!
+        Dinesh wins by 1h 42m today!
       </div>
     </Card>
   );
