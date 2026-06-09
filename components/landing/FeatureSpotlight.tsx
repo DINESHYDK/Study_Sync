@@ -71,7 +71,7 @@ export function AutoPauseVisual() {
 
 export function PopupTimerVisual() {
   return (
-    <div className="flex min-h-80 items-center justify-center rounded-3xl border border-[var(--border-strong)] bg-[linear-gradient(135deg,var(--surface),#0a0a0f)] p-8">
+    <div className="flex min-h-80 items-center justify-center rounded-3xl border border-[var(--border-strong)] bg-[var(--surface-strong)] p-8">
       <Card className="w-full max-w-xs border-[var(--border-strong)] bg-[var(--surface-strong)] p-5 shadow-[0_0_60px_rgba(45,212,191,0.15)]">
         <div className="flex items-center justify-between text-sm">
           <span className="flex items-center gap-1.5 font-semibold">

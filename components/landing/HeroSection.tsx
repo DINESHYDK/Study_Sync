@@ -10,7 +10,7 @@ import { cn } from "@/lib/utils";
 
 export function HeroSection() {
   return (
-    <section className="flex min-h-screen flex-col items-center justify-center bg-[radial-gradient(ellipse_80%_50%_at_50%_-20%,rgba(45,212,191,0.08),transparent)] px-4 pb-20 pt-16 text-center md:px-8 lg:px-16">
+    <section className="flex min-h-screen flex-col items-center justify-center bg-[#0a0a0f] px-4 pb-20 pt-16 text-center md:px-8 lg:px-16">
       <FadeIn className="grid max-w-5xl justify-items-center gap-6">
         <Badge className={cn("flex items-center gap-1.5 rounded-full px-4 py-1 text-sm", landingPalette.softBorder, landingPalette.softTint, landingPalette.softIcon)}>
           <GraduationCap className="h-3.5 w-3.5" />
@@ -35,7 +35,7 @@ export function HeroSection() {
               <ArrowRight className="h-5 w-5" />
             </Link>
           </Button>
-          <Button asChild className="border-[#2dd4bf]/25 text-teal-200 hover:bg-[#2dd4bf]/10" size="lg" variant="outline">
+          <Button asChild className="border-[#2dd4bf]/20 text-[#2dd4bf] hover:bg-[#2dd4bf]/10" size="lg" variant="outline">
             <a href="#how-it-works">See How It Works</a>
           </Button>
         </div>

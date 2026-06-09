@@ -26,7 +26,7 @@ function StatCard({
       </div>
       <p className="mt-5 font-mono text-2xl font-semibold">{time}</p>
       <div className="mt-3 h-2 overflow-hidden rounded-full bg-[#0a0a0f]">
-        <div className="h-full rounded-full bg-gradient-to-r from-[#2dd4bf] to-[#38bdf8]" style={{ width }} />
+        <div className="h-full rounded-full bg-[#2dd4bf]" style={{ width }} />
       </div>
       <p className="mt-3 text-sm text-[var(--text-muted)]">{tasks}</p>
     </div>
