@@ -35,7 +35,7 @@ function EditableSubject({
   }
 
   if (readOnly || segment.ended_at === null) {
-    return <span className="font-medium text-foreground">{segment.subject_name}</span>;
+    return <span className="block min-w-0 max-w-full truncate font-medium text-foreground">{segment.subject_name}</span>;
   }
 
   if (isEditing) {
@@ -52,7 +52,7 @@ function EditableSubject({
 
   return (
     <button
-      className="inline-flex max-w-full items-center gap-2 rounded-lg text-left font-medium text-foreground hover:text-[#6c63ff]"
+      className="inline-flex min-w-0 max-w-full items-center gap-2 rounded-lg text-left font-medium text-foreground hover:text-[#6c63ff]"
       onClick={() => setEditing(true)}
       type="button"
     >
@@ -82,53 +82,60 @@ export function SessionSegmentList({ segments, readOnly = false, title = "Sessio
   }
 
   return (
-    <Card>
+    <Card className="min-w-0 overflow-hidden">
       <CardHeader>
         <CardTitle>{title}</CardTitle>
       </CardHeader>
-      <CardContent>
+      <CardContent className="min-w-0">
         {segments.length === 0 ? (
           <div className="rounded-2xl border border-dashed border-border p-6 text-sm text-muted-foreground">
             No study segments logged for this date.
           </div>
         ) : (
-          <div className="overflow-x-auto scrollbar-subtle">
-            <table className="w-full min-w-[620px] text-left text-sm">
-              <thead className="text-xs uppercase text-muted-foreground">
-                <tr className="border-b border-border">
-                  <th className="pb-3 pr-4 font-semibold">Subject Name</th>
-                  <th className="pb-3 pr-4 font-semibold">Time Range</th>
-                  <th className="pb-3 text-right font-semibold">Duration</th>
-                </tr>
-              </thead>
-              <tbody>
-                {segments.map((segment) => {
-                  const running = segment.ended_at === null;
+          <div className="min-w-0 text-sm">
+            <div className="hidden grid-cols-[minmax(0,1.05fr)_minmax(7rem,0.95fr)_minmax(4.5rem,auto)] gap-3 border-b border-border pb-3 text-xs font-semibold uppercase text-muted-foreground sm:grid">
+              <div>Subject Name</div>
+              <div>Time Range</div>
+              <div className="text-right">Duration</div>
+            </div>
+            <div className="grid min-w-0">
+              {segments.map((segment) => {
+                const running = segment.ended_at === null;
 
-                  return (
-                    <tr className="border-b border-border/70 last:border-0" key={segment.id}>
-                      <td className="py-3 pr-4">
-                        <div className="flex min-w-0 items-center gap-2">
-                          {running ? <span className="h-2.5 w-2.5 animate-pulse rounded-full bg-emerald-400" /> : null}
-                          <EditableSubject readOnly={readOnly} segment={segment} />
-                        </div>
-                      </td>
-                      <td className="py-3 pr-4 text-muted-foreground">{formatTimeRange(segment.started_at, segment.ended_at)}</td>
-                      <td className={cn("py-3 text-right font-mono", running ? "text-emerald-200" : "text-foreground")}>
-                        {running ? "Running" : formatDurationCompact(segmentDurationSecs(segment))}
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-              <tfoot>
-                <tr>
-                  <td className="pt-4" />
-                  <td className="pt-4 text-right text-sm font-semibold text-muted-foreground">Total:</td>
-                  <td className="pt-4 text-right font-mono font-semibold">{formatDurationCompact(total)}</td>
-                </tr>
-              </tfoot>
-            </table>
+                return (
+                  <div
+                    className="grid min-w-0 gap-2 border-b border-border/70 py-3 last:border-0 sm:grid-cols-[minmax(0,1.05fr)_minmax(7rem,0.95fr)_minmax(4.5rem,auto)] sm:gap-3 sm:items-center"
+                    key={segment.id}
+                  >
+                    <div className="min-w-0">
+                      <span className="mb-1 block text-[10px] font-semibold uppercase text-muted-foreground sm:hidden">
+                        Subject
+                      </span>
+                      <div className="flex min-w-0 items-center gap-2">
+                        {running ? <span className="h-2.5 w-2.5 shrink-0 animate-pulse rounded-full bg-emerald-400" /> : null}
+                        <EditableSubject readOnly={readOnly} segment={segment} />
+                      </div>
+                    </div>
+                    <div className="min-w-0 text-muted-foreground">
+                      <span className="mb-1 block text-[10px] font-semibold uppercase text-muted-foreground sm:hidden">
+                        Time
+                      </span>
+                      <span className="block truncate">{formatTimeRange(segment.started_at, segment.ended_at)}</span>
+                    </div>
+                    <div className={cn("font-mono sm:text-right", running ? "text-emerald-200" : "text-foreground")}>
+                      <span className="mb-1 block font-body text-[10px] font-semibold uppercase text-muted-foreground sm:hidden">
+                        Duration
+                      </span>
+                      <span className="whitespace-nowrap">{running ? "Running" : formatDurationCompact(segmentDurationSecs(segment))}</span>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+            <div className="grid grid-cols-[1fr_auto] gap-3 pt-4 text-sm">
+              <span className="text-right font-semibold text-muted-foreground">Total:</span>
+              <span className="whitespace-nowrap text-right font-mono font-semibold">{formatDurationCompact(total)}</span>
+            </div>
           </div>
         )}
       </CardContent>

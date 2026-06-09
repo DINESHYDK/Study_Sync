@@ -59,7 +59,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   }
 
   const sidebar = (
-    <aside className="flex h-full w-72 flex-col border-r border-border bg-[#101018]/95 px-4 py-5 backdrop-blur">
+    <aside className="flex h-full w-full max-w-72 flex-col border-r border-border bg-[#101018]/95 px-4 py-5 backdrop-blur">
       <Link className="flex items-center px-2 py-2" href="/dashboard" onClick={() => setMobileOpen(false)}>
         <Logo size={36} showText={true} />
       </Link>
@@ -112,7 +112,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   );
 
   return (
-    <div className="min-h-screen lg:grid lg:grid-cols-[18rem_1fr]">
+    <div className="min-h-screen min-w-0 lg:grid lg:grid-cols-[18rem_minmax(0,1fr)]">
       <div className="hidden lg:block sticky top-0 h-screen">{sidebar}</div>
 
       <div className="sticky top-0 z-40 flex items-center justify-between border-b border-border bg-background/85 px-4 py-3 backdrop-blur lg:hidden">
@@ -127,7 +127,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
       {isMobileOpen ? <div className="fixed inset-0 z-50 bg-background lg:hidden">{sidebar}</div> : null}
 
-      <main className="min-w-0 px-4 py-6 sm:px-6 lg:px-8">{children}</main>
+      <main className="min-w-0 max-w-full overflow-x-clip px-4 py-6 sm:px-6 lg:px-8">{children}</main>
       <TimerPopup />
       <TimerFullscreen />
       <SubjectNameModal />

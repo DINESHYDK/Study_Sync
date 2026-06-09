@@ -1,7 +1,9 @@
 import { MetadataRoute } from "next";
 
+import { STUDYSYNC_PUBLIC_URL } from "@/lib/site";
+
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = "https://study-sync-ydk.vercel.app";
+  const baseUrl = STUDYSYNC_PUBLIC_URL;
   const routes = [
     "",
     "/login",

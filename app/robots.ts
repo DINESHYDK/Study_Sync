@@ -1,5 +1,7 @@
 import { MetadataRoute } from "next";
 
+import { STUDYSYNC_PUBLIC_URL } from "@/lib/site";
+
 export default function robots(): MetadataRoute.Robots {
   return {
     rules: {
@@ -7,6 +9,6 @@ export default function robots(): MetadataRoute.Robots {
       allow: "/",
       disallow: ["/api/", "/auth/callback", "/dashboard", "/friends", "/settings"],
     },
-    sitemap: "https://study-sync-ydk.vercel.app/sitemap.xml",
+    sitemap: `${STUDYSYNC_PUBLIC_URL}/sitemap.xml`,
   };
 }

@@ -4,6 +4,7 @@ import { Inter, JetBrains_Mono, Space_Grotesk } from "next/font/google";
 import "./globals.css";
 
 import { AppProviders } from "@/components/providers/AppProviders";
+import { STUDYSYNC_PUBLIC_URL } from "@/lib/site";
 import { cn } from "@/lib/utils";
 
 const inter = Inter({
@@ -27,7 +28,7 @@ export const metadata: Metadata = {
     template: "%s | StudySync",
   },
   description: "Track your study sessions. Compete with friends.",
-  metadataBase: new URL("https://study-sync-ydk.vercel.app"),
+  metadataBase: new URL(STUDYSYNC_PUBLIC_URL),
   alternates: {
     canonical: "/",
   },
@@ -44,7 +45,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "StudySync",
     description: "Track your study sessions. Compete with friends.",
-    url: "https://study-sync-ydk.vercel.app",
+    url: STUDYSYNC_PUBLIC_URL,
     siteName: "StudySync",
     locale: "en_US",
     type: "website",

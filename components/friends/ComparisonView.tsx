@@ -92,12 +92,12 @@ function ComparisonColumn({ data, highlighted }: { data: UserDayData; highlighte
           : "0 0 0px rgba(0, 0, 0, 0)",
         borderColor: highlighted ? "rgba(245, 158, 11, 0.5)" : "rgba(42, 42, 61, 0.5)",
       }}
-      className="rounded-2xl border bg-card/40 transition-colors"
+      className="min-w-0 overflow-hidden rounded-2xl border bg-card/40 transition-colors"
       initial={{ boxShadow: "0 0 0px rgba(0, 0, 0, 0)" }}
       transition={{ duration: 0.5 }}
     >
-      <div className="grid gap-5 p-5">
-        <div className="flex items-center gap-3">
+      <div className="grid min-w-0 gap-5 p-4 sm:p-5">
+        <div className="flex min-w-0 items-center gap-3">
           <UserAvatar profile={data.profile} />
           <div className="min-w-0">
             <p className="truncate font-heading text-lg font-semibold">{data.profile.full_name || data.profile.email}</p>
@@ -181,18 +181,18 @@ export function ComparisonView({ friendId }: { friendId: string }) {
   }
 
   return (
-    <div className="flex flex-col gap-6 min-w-0 w-full">
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+    <div className="flex min-w-0 w-full max-w-full flex-col gap-6">
+      <div className="flex min-w-0 flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <Button asChild variant="ghost">
           <Link href="/friends">
             <ArrowLeft className="h-4 w-4" />
             Back
           </Link>
         </Button>
-        <div className="grid gap-3 sm:grid-cols-[auto_220px]">
-          <Input onChange={(event) => setDate(event.target.value)} type="date" value={date} />
+        <div className="grid min-w-0 gap-3 sm:w-auto sm:grid-cols-[minmax(0,10rem)_minmax(0,14rem)]">
+          <Input className="min-w-0" onChange={(event) => setDate(event.target.value)} type="date" value={date} />
           <Select onValueChange={(value: Metric) => setMetric(value)} value={metric}>
-            <SelectTrigger>
+            <SelectTrigger className="min-w-0">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -204,7 +204,7 @@ export function ComparisonView({ friendId }: { friendId: string }) {
       </div>
 
       {isLoading ? (
-        <div className="grid gap-5 xl:grid-cols-2 min-w-0 w-full animate-pulse">
+        <div className="grid min-w-0 w-full animate-pulse gap-5 xl:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
           <div className="rounded-2xl border border-border bg-card/20 p-5 space-y-5">
             <div className="flex items-center gap-3">
               <div className="h-10 w-10 rounded-full bg-secondary" />
@@ -230,10 +230,10 @@ export function ComparisonView({ friendId }: { friendId: string }) {
         </div>
       ) : left && right ? (
         <>
-          <div className="rounded-2xl border border-amber-500/30 bg-amber-500/10 p-5 text-center font-heading text-2xl font-semibold text-amber-100">
+          <div className="overflow-hidden rounded-2xl border border-amber-500/30 bg-amber-500/10 p-5 text-center font-heading text-xl font-semibold text-amber-100 sm:text-2xl">
             {winnerText(left, right, metric)}
           </div>
-          <div className="grid gap-5 xl:grid-cols-2 min-w-0 w-full">
+          <div className="grid min-w-0 w-full gap-5 xl:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
             <ComparisonColumn data={left} highlighted={scores.leftWins} />
             <ComparisonColumn data={right} highlighted={scores.rightWins} />
           </div>

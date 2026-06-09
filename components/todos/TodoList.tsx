@@ -320,11 +320,11 @@ export function TodoList({ ownerId, date = todayLocalDate(), readOnly = false, t
   }
 
   return (
-    <Card>
+    <Card className="min-w-0 overflow-hidden">
       <CardHeader>
         <CardTitle>{title}</CardTitle>
       </CardHeader>
-      <CardContent className="grid gap-4">
+      <CardContent className="grid min-w-0 gap-4">
         {!readOnly ? (
           <form className="grid gap-2 sm:grid-cols-[1fr_auto]" onSubmit={handleAdd}>
             <Input
@@ -354,7 +354,7 @@ export function TodoList({ ownerId, date = todayLocalDate(), readOnly = false, t
         ) : (
           <DndContext collisionDetection={closestCenter} onDragEnd={(event) => void handleDragEnd(event)} sensors={sensors}>
             <SortableContext items={displayTodos.map((todo) => todo.id)} strategy={verticalListSortingStrategy}>
-              <ul className="grid gap-2">
+              <ul className="grid min-w-0 gap-2">
                 {displayTodos.map((todo) => (
                   <TodoItem
                     key={todo.id}

@@ -28,7 +28,7 @@ export function TodoItem({ todo, readOnly = false, onToggle, onDelete, isProcess
     <li
       ref={setNodeRef}
       className={cn(
-        "grid grid-cols-[auto_1fr_auto] items-center gap-3 rounded-xl border border-border bg-secondary/50 px-3 py-2 transition",
+        "grid min-w-0 grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 rounded-xl border border-border bg-secondary/50 px-3 py-2 transition",
         isDragging && "opacity-70 shadow-glow",
         isProcessing && "opacity-50 pointer-events-none",
       )}
@@ -55,7 +55,7 @@ export function TodoItem({ todo, readOnly = false, onToggle, onDelete, isProcess
           onChange={() => onToggle(todo)}
           type="checkbox"
         />
-        <span className={cn("truncate", todo.is_completed && "text-muted-foreground line-through")}>{todo.text}</span>
+        <span className={cn("min-w-0 truncate", todo.is_completed && "text-muted-foreground line-through")}>{todo.text}</span>
       </label>
       {!readOnly ? (
         <Button disabled={isProcessing} onClick={() => onDelete(todo)} size="icon-sm" variant="ghost">

@@ -1,6 +1,6 @@
 "use client";
 
-import { Check, Copy, KeyRound, Trash2, UserPlus } from "lucide-react";
+import { Check, Copy, KeyRound, MessageSquareText, Share2, Trash2, UserPlus } from "lucide-react";
 import { FormEvent, useEffect, useState } from "react";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { AVATARS } from "@/lib/avatars";
+import { STUDYSYNC_PUBLIC_URL } from "@/lib/site";
 import { appUrl, computeInitials } from "@/lib/utils";
 import { useFriends } from "@/hooks/useFriends";
 import { useFriendStore } from "@/stores/useFriendStore";
@@ -32,6 +33,8 @@ export default function SettingsPage() {
   const [processingRequestIds, setProcessingRequestIds] = useState<string[]>([]);
   const [isResettingPassword, setResettingPassword] = useState(false);
   const [isDeletingAccount, setDeletingAccount] = useState(false);
+  const [shareMessage, setShareMessage] = useState("");
+  const [shareContext, setShareContext] = useState<"mobile" | "desktop" | null>(null);
 
   useEffect(() => {
     if (profile) {
@@ -111,6 +114,30 @@ export default function SettingsPage() {
   async function copyReferralCode() {
     await navigator.clipboard.writeText(currentProfile.referral_code);
     toast.success("Code copied!");
+  }
+
+  function generateShareMessage() {
+    const isMobileContext =
+      /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent) ||
+      window.matchMedia("(max-width: 640px), (pointer: coarse)").matches;
+    const displayName = currentProfile.full_name || "me";
+    const message = isMobileContext
+      ? `Hey! I am using StudySync to track study sessions with friends.\n\nJoin me here: ${STUDYSYNC_PUBLIC_URL}\nUse my referral code: ${currentProfile.referral_code}\n\nLet's keep each other accountable.`
+      : `Hey! I am using StudySync on my laptop to track focused study sessions, todos, and friendly comparisons.\n\nOpen ${STUDYSYNC_PUBLIC_URL}, create a free account, and add ${displayName} with referral code ${currentProfile.referral_code}.\n\nLet's study together.`;
+
+    setShareContext(isMobileContext ? "mobile" : "desktop");
+    setShareMessage(message);
+  }
+
+  async function copyShareMessage() {
+    const messageToCopy = shareMessage || createFallbackShareMessage();
+    await navigator.clipboard.writeText(messageToCopy);
+    setShareMessage(messageToCopy);
+    toast.success("Welcome message copied!");
+  }
+
+  function createFallbackShareMessage() {
+    return `Hey! Join me on StudySync: ${STUDYSYNC_PUBLIC_URL}\nUse my referral code: ${currentProfile.referral_code}`;
   }
 
   async function sendFriendRequest(event: FormEvent<HTMLFormElement>) {
@@ -262,6 +289,43 @@ export default function SettingsPage() {
           <Button onClick={() => void copyReferralCode()} variant="outline">
             <Copy className="h-4 w-4" />
             Copy
+          </Button>
+        </CardContent>
+      </Card>
+
+      <Card className="min-w-0 overflow-hidden">
+        <CardHeader>
+          <CardTitle>Share to friends</CardTitle>
+        </CardHeader>
+        <CardContent className="grid min-w-0 gap-4">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div className="min-w-0">
+              <p className="text-sm text-muted-foreground">
+                Generate a ready-to-send welcome message with your referral code and the StudySync link.
+              </p>
+              {shareContext ? (
+                <p className="mt-1 text-xs text-muted-foreground">
+                  Optimised for {shareContext === "mobile" ? "mobile sharing" : "desktop or laptop sharing"}.
+                </p>
+              ) : null}
+            </div>
+            <Button className="shrink-0" onClick={generateShareMessage} variant="outline">
+              <Share2 className="h-4 w-4" />
+              Generate
+            </Button>
+          </div>
+          <div className="min-w-0 rounded-2xl border border-border bg-secondary p-4">
+            <div className="mb-3 flex items-center gap-2 text-sm font-semibold">
+              <MessageSquareText className="h-4 w-4 text-muted-foreground" />
+              Welcome message
+            </div>
+            <p className="whitespace-pre-wrap break-words text-sm leading-6 text-muted-foreground">
+              {shareMessage || createFallbackShareMessage()}
+            </p>
+          </div>
+          <Button className="w-full sm:w-fit" onClick={() => void copyShareMessage()}>
+            <Copy className="h-4 w-4" />
+            Copy Welcome Message
           </Button>
         </CardContent>
       </Card>

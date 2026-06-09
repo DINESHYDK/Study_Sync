@@ -59,4 +59,17 @@ Added production-grade brand resources and search engine optimization configurat
 - **SEO Metadata**: Configured layout meta titles, templates, base URL canonical alternates, Open Graph specs, and Twitter Cards to expand links into rich previews on social platforms.
 - **Sitemap & Robots**: Created `app/sitemap.ts` and `app/robots.ts` to catalog public pages and block search crawlers from scraping user directories.
 
+## Milestone 9 - Public Landing Page
+
+Read `StudySync_LandingPage_Prompt.md` and replaced the root-route dashboard redirect with a public marketing page. The implementation keeps `app/page.tsx` as a simple section stack and moves the section UI into `components/landing`.
+
+Implemented:
+- Sticky landing navbar with logo, anchor navigation, login/signup CTAs, and a logged-in dashboard banner.
+- Hero section with product copy, CTA buttons, social proof, and a CSS/Tailwind timer mockup.
+- Nine-card feature grid, four-step "How It Works" flow, three reusable feature spotlights, mobile-optimised section, final CTA banner, and footer.
+- Framer Motion reveal wrapper for section and card animations.
+
+Design notes:
+- Used the existing dark theme tokens, shadcn-style `Button`, `Card`, and `Badge` primitives, Lucide icons, and `/public/logo.png`.
+- Kept visuals as CSS/Tailwind mockups rather than screenshots or external images, matching the landing-page prompt.
 
