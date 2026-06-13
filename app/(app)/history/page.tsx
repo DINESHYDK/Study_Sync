@@ -6,6 +6,7 @@ import { toast } from "sonner";
 
 import { useSupabase } from "@/components/providers/SupabaseProvider";
 import { SessionSegmentList } from "@/components/timer/SessionSegmentList";
+import { SubjectChart } from "@/components/stats/SubjectChart";
 import { TodoList } from "@/components/todos/TodoList";
 import { type TodoRow } from "@/components/todos/TodoItem";
 import { Card, CardContent } from "@/components/ui/card";
@@ -191,6 +192,9 @@ export default function HistoryPage() {
               </div>
             </CardContent>
           </Card>
+
+          {/* ── Subject Breakdown chart for this date ──────────────────── */}
+          <SubjectChart fixedDate={selectedDate} />
 
           {/* ── Segment list ───────────────────────────────────────────────── */}
           {/* readOnly=false for today so subject names remain editable */}

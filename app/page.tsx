@@ -6,6 +6,7 @@ import { HeroSection } from "@/components/landing/HeroSection";
 import { HowItWorks } from "@/components/landing/HowItWorks";
 import { MobileOptimized } from "@/components/landing/MobileOptimized";
 import { Navbar } from "@/components/landing/Navbar";
+import { Phase2Features } from "@/components/landing/Phase2Features";
 import { ScrollAnimations } from "@/components/landing/ScrollAnimations";
 
 export default function HomePage() {
@@ -17,6 +18,7 @@ export default function HomePage() {
       <HeroSection />
       <FeaturesGrid />
       <HowItWorks />
+      <Phase2Features />
       <FeatureSpotlight
         body="Whether you slam your laptop shut, your tab crashes, or you just forget, StudySync detects it and pauses your timer the moment you are gone. When you are back, just hit Resume and keep going."
         label="Never Lose a Second"

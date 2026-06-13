@@ -135,13 +135,18 @@ function DonutArc({ color, fraction, startFraction, delay, totalSeconds }: ArcPr
 
 // ── Main component ─────────────────────────────────────────────────────────────
 
-export function SubjectChart() {
+export function SubjectChart({ fixedDate }: { fixedDate?: string }) {
   const { supabase, isConfigured } = useSupabase();
   const profile = useUserStore((state) => state.profile);
   const [period, setPeriod] = useState<Period>("today");
   const [slices, setSlices] = useState<SubjectSlice[]>([]);
   const [totalSeconds, setTotalSeconds] = useState(0);
   const [isLoading, setLoading] = useState(true);
+
+  // When a fixed date is provided, derive a one-day range from it.
+  const effectiveRange = fixedDate
+    ? { from: fixedDate, to: fixedDate }
+    : periodRange(period);
 
   const loadData = useCallback(async () => {
     if (!profile) return;
@@ -155,7 +160,7 @@ export function SubjectChart() {
         return;
       }
 
-      const { from, to } = periodRange(period);
+      const { from, to } = effectiveRange;
 
       // Step 1: get session IDs in the date range.
       const { data: sessions, error: sessErr } = await supabase
@@ -228,14 +233,14 @@ export function SubjectChart() {
     } finally {
       setLoading(false);
     }
-  }, [isConfigured, period, profile, supabase]);
+  }, [isConfigured, period, profile, supabase, effectiveRange]);
 
   useEffect(() => {
     void loadData();
   }, [loadData]);
 
   const periodLabel: Record<Period, string> = {
-    today: "Today",
+    today: fixedDate ?? "Today",
     week: "This Week",
     month: "This Month",
   };
@@ -244,16 +249,18 @@ export function SubjectChart() {
     <Card className="min-w-0 overflow-hidden">
       <CardHeader className="flex-row items-center justify-between gap-4">
         <CardTitle>Subject Breakdown</CardTitle>
-        <Select onValueChange={(v) => setPeriod(v as Period)} value={period}>
-          <SelectTrigger className="h-9 w-36">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="today">Today</SelectItem>
-            <SelectItem value="week">This Week</SelectItem>
-            <SelectItem value="month">This Month</SelectItem>
-          </SelectContent>
-        </Select>
+        {!fixedDate && (
+          <Select onValueChange={(v) => setPeriod(v as Period)} value={period}>
+            <SelectTrigger className="h-9 w-36">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="today">Today</SelectItem>
+              <SelectItem value="week">This Week</SelectItem>
+              <SelectItem value="month">This Month</SelectItem>
+            </SelectContent>
+          </Select>
+        )}
       </CardHeader>
 
       <CardContent>
