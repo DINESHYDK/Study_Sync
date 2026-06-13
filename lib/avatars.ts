@@ -5,18 +5,18 @@ export type AvatarOption = {
 };
 
 export const AVATARS = [
-  { id: "explorer", url: "https://api.dicebear.com/7.x/adventurer/svg?seed=explorer", label: "Explorer" },
-  { id: "scholar", url: "https://api.dicebear.com/7.x/lorelei/svg?seed=scholar", label: "Scholar" },
-  { id: "coder", url: "https://api.dicebear.com/7.x/bottts/svg?seed=coder", label: "Coder" },
-  { id: "creator", url: "https://api.dicebear.com/7.x/croodles/svg?seed=creator", label: "Creator" },
-  { id: "artist", url: "https://api.dicebear.com/7.x/lorelei/svg?seed=artist", label: "Artist" },
-  { id: "gamer", url: "https://api.dicebear.com/7.x/pixel-art/svg?seed=gamer", label: "Gamer" },
-  { id: "cyborg", url: "https://api.dicebear.com/7.x/bottts/svg?seed=cyborg", label: "Cyborg" },
-  { id: "ninja", url: "https://api.dicebear.com/7.x/bottts/svg?seed=ninja", label: "Ninja" },
-  { id: "hero", url: "https://api.dicebear.com/7.x/adventurer/svg?seed=hero", label: "Hero" },
-  { id: "chef", url: "https://api.dicebear.com/7.x/lorelei/svg?seed=chef", label: "Chef" },
-  { id: "space", url: "https://api.dicebear.com/7.x/bottts/svg?seed=space", label: "Astronaut" },
-  { id: "pixel", url: "https://api.dicebear.com/7.x/pixel-art/svg?seed=pixel", label: "Retro" },
+  { id: "micah-felix", url: "https://api.dicebear.com/9.x/micah/svg?seed=Felix&backgroundColor=transparent", label: "Felix" },
+  { id: "avataaars-aiden", url: "https://api.dicebear.com/9.x/avataaars/svg?seed=Aiden&backgroundColor=transparent", label: "Aiden" },
+  { id: "notionists-jude", url: "https://api.dicebear.com/9.x/notionists/svg?seed=Jude&backgroundColor=transparent", label: "Jude" },
+  { id: "miniavs-amaya", url: "https://api.dicebear.com/9.x/miniavs/svg?seed=Amaya&backgroundColor=transparent", label: "Amaya" },
+  { id: "micah-oliver", url: "https://api.dicebear.com/9.x/micah/svg?seed=Oliver&backgroundColor=transparent", label: "Oliver" },
+  { id: "avataaars-sophia", url: "https://api.dicebear.com/9.x/avataaars/svg?seed=Sophia&backgroundColor=transparent", label: "Sophia" },
+  { id: "notionists-liam", url: "https://api.dicebear.com/9.x/notionists/svg?seed=Liam&backgroundColor=transparent", label: "Liam" },
+  { id: "miniavs-emma", url: "https://api.dicebear.com/9.x/miniavs/svg?seed=Emma&backgroundColor=transparent", label: "Emma" },
+  { id: "micah-noah", url: "https://api.dicebear.com/9.x/micah/svg?seed=Noah&backgroundColor=transparent", label: "Noah" },
+  { id: "avataaars-bella", url: "https://api.dicebear.com/9.x/avataaars/svg?seed=Isabella&backgroundColor=transparent", label: "Bella" },
+  { id: "notionists-james", url: "https://api.dicebear.com/9.x/notionists/svg?seed=James&backgroundColor=transparent", label: "James" },
+  { id: "miniavs-mia", url: "https://api.dicebear.com/9.x/miniavs/svg?seed=Mia&backgroundColor=transparent", label: "Mia" },
 ] as const satisfies readonly AvatarOption[];
 
 export const AVATAR_ACCENTS = [

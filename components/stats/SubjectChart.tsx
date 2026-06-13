@@ -12,10 +12,10 @@ import { useUserStore } from "@/stores/useUserStore";
 
 // ── Constants ──────────────────────────────────────────────────────────────────
 
-const RADIUS = 100;
-const STROKE_WIDTH = 32;
-const CENTER = 140;
-const VIEW_SIZE = 280;
+const RADIUS = 130;
+const STROKE_WIDTH = 40;
+const CENTER = 180;
+const VIEW_SIZE = 360;
 const CIRCUMFERENCE = 2 * Math.PI * RADIUS;
 // Arc-to-arc gap in SVG user units.
 const GAP = (CIRCUMFERENCE / 360) * 1.2;
@@ -144,7 +144,7 @@ export function SubjectChart({ fixedDate }: { fixedDate?: string }) {
   const [isLoading, setLoading] = useState(true);
 
   // When a fixed date is provided, derive a one-day range from it.
-  const effectiveRange = fixedDate
+  const { from: effectiveFrom, to: effectiveTo } = fixedDate
     ? { from: fixedDate, to: fixedDate }
     : periodRange(period);
 
@@ -160,15 +160,13 @@ export function SubjectChart({ fixedDate }: { fixedDate?: string }) {
         return;
       }
 
-      const { from, to } = effectiveRange;
-
       // Step 1: get session IDs in the date range.
       const { data: sessions, error: sessErr } = await supabase
         .from("study_sessions")
         .select("id")
         .eq("user_id", profile.id)
-        .gte("date", from)
-        .lte("date", to);
+        .gte("date", effectiveFrom)
+        .lte("date", effectiveTo);
 
       if (sessErr) {
         toast.error(sessErr.message);
@@ -233,7 +231,7 @@ export function SubjectChart({ fixedDate }: { fixedDate?: string }) {
     } finally {
       setLoading(false);
     }
-  }, [isConfigured, period, profile, supabase, effectiveRange]);
+  }, [isConfigured, profile, supabase, effectiveFrom, effectiveTo]);
 
   useEffect(() => {
     void loadData();
