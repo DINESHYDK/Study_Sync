@@ -8,10 +8,12 @@ export function FadeIn({
   children,
   delay = 0,
   className,
+  ...rest
 }: {
   children: React.ReactNode;
   delay?: number;
   className?: string;
+  [key: string]: unknown;
 }) {
   return (
     <motion.div
@@ -20,6 +22,7 @@ export function FadeIn({
       transition={{ duration: 0.6, delay, ease: [0.22, 1, 0.36, 1] }}
       viewport={{ once: true, margin: "-80px" }}
       whileInView={{ opacity: 1, y: 0 }}
+      {...rest}
     >
       {children}
     </motion.div>

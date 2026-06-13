@@ -67,7 +67,7 @@ export function FeaturesGrid() {
   return (
     <section className="px-4 py-24 md:px-8 lg:px-16" id="features">
       <div className="mx-auto max-w-6xl">
-        <FadeIn className="mx-auto mb-12 max-w-3xl text-center">
+        <FadeIn className="mx-auto mb-12 max-w-3xl text-center" data-anim="section-heading">
           <p className={cn("text-sm font-bold uppercase tracking-[0.28em]", landingPalette.label)}>Everything You Need</p>
           <h2 className="mt-3 font-heading text-2xl font-bold tracking-normal md:text-4xl">
             One dashboard. Every habit. Shared with your crew.
@@ -79,7 +79,7 @@ export function FeaturesGrid() {
 
             return (
               <FadeIn delay={index * 0.05} key={feature.title}>
-                <Card className="h-full border-[var(--border-strong)] bg-[var(--surface-strong)]">
+                <Card className="h-full border-[var(--border-strong)] bg-[var(--surface-strong)]" data-anim="feature-card">
                   <CardContent className="grid gap-4 p-6">
                     <div className={cn("flex h-10 w-10 items-center justify-center rounded-xl", landingPalette.softTint, landingPalette.softIcon)}>
                       <Icon className="h-5 w-5" />

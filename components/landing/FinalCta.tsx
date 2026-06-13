@@ -8,7 +8,7 @@ import { cn } from "@/lib/utils";
 export function FinalCta() {
   return (
     <section className="px-4 py-20 md:px-8 lg:px-16">
-      <FadeIn className={cn("mx-auto max-w-5xl rounded-3xl p-10 text-center text-slate-50 md:p-16", landingPalette.softGradientDark)}>
+      <FadeIn className={cn("mx-auto max-w-5xl rounded-3xl p-10 text-center text-slate-50 md:p-16", landingPalette.softGradientDark)} data-anim="final-cta">
         <h2 className="font-heading text-3xl font-bold tracking-normal md:text-5xl">Ready to make every study hour count?</h2>
         <p className="mx-auto mt-4 max-w-2xl text-base text-teal-50/80 md:text-lg">
           Join your study group. Start your first session in under a minute.

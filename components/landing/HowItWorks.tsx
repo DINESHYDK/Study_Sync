@@ -41,7 +41,7 @@ export function HowItWorks() {
 
             return (
               <FadeIn className="contents" delay={index * 0.08} key={step.title}>
-                <div className="rounded-2xl border border-[var(--border-strong)] bg-[var(--surface)] p-6">
+                <div className="rounded-2xl border border-[var(--border-strong)] bg-[var(--surface)] p-6" data-anim="hiw-step">
                   <div className="mb-5 flex items-center gap-3">
                     <span className={cn("flex h-10 w-10 items-center justify-center rounded-full text-sm font-bold", landingPalette.softGradientDark)}>
                       {index + 1}
@@ -54,7 +54,7 @@ export function HowItWorks() {
                   <p className="mt-2 text-sm leading-6 text-[var(--text-muted)]">{step.description}</p>
                 </div>
                 {index < steps.length - 1 ? (
-                  <div className="hidden pt-14 text-[var(--text-muted)] md:block">
+                  <div className="hidden pt-14 text-[var(--text-muted)] md:block" data-anim="hiw-arrow">
                     <ChevronRight className="h-5 w-5" />
                   </div>
                 ) : null}

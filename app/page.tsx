@@ -6,10 +6,13 @@ import { HeroSection } from "@/components/landing/HeroSection";
 import { HowItWorks } from "@/components/landing/HowItWorks";
 import { MobileOptimized } from "@/components/landing/MobileOptimized";
 import { Navbar } from "@/components/landing/Navbar";
+import { ScrollAnimations } from "@/components/landing/ScrollAnimations";
 
 export default function HomePage() {
   return (
     <div className="overflow-x-hidden scroll-smooth bg-[#0a0a0f]">
+      {/* GSAP scroll animations — client-only, renders null */}
+      <ScrollAnimations />
       <Navbar />
       <HeroSection />
       <FeaturesGrid />

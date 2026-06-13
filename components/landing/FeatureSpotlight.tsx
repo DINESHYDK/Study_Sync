@@ -18,14 +18,14 @@ type SpotlightProps = {
 
 export function FeatureSpotlight({ id, label, title, body, points, visual, reverse = false }: SpotlightProps) {
   return (
-    <section className="px-4 py-20 md:px-8 lg:px-16" id={id}>
+    <section className="px-4 py-20 md:px-8 lg:px-16" data-anim="spotlight" id={id}>
       <div
         className={cn(
           "mx-auto flex max-w-6xl flex-col items-center gap-10 md:flex-row",
           reverse && "md:flex-row-reverse",
         )}
       >
-        <FadeIn className="flex-1">
+        <FadeIn className="flex-1" data-anim="spotlight-text">
           <p className={cn("text-sm font-bold uppercase tracking-[0.28em]", landingPalette.label)}>{label}</p>
           <h2 className="mt-3 font-heading text-2xl font-bold tracking-normal md:text-4xl">{title}</h2>
           <p className="mt-5 max-w-xl text-base leading-8 text-[var(--text-muted)]">{body}</p>
@@ -38,7 +38,7 @@ export function FeatureSpotlight({ id, label, title, body, points, visual, rever
             ))}
           </ul>
         </FadeIn>
-        <FadeIn className="w-full flex-1" delay={0.1}>
+        <FadeIn className="w-full flex-1" data-anim="spotlight-visual" delay={0.1}>
           {visual}
         </FadeIn>
       </div>
