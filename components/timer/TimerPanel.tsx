@@ -13,6 +13,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { SoundBoard } from "@/components/sounds/SoundBoard";
 
 export function TimerPanel() {
   const { resumeTimer, pauseTimer } = useTimer();
@@ -67,6 +68,10 @@ export function TimerPanel() {
         </div>
         <div className="flex items-center gap-2">
           <Badge variant={isRunning ? "success" : "secondary"}>{isRunning ? "Running" : status === "paused" ? "Paused" : "Idle"}</Badge>
+
+          {/* Ambient sound board — the Headphones button lives inside SoundBoard */}
+          <SoundBoard />
+
           <Tooltip>
             <TooltipTrigger asChild>
               <Button onClick={() => void handlePopOut()} size="icon" variant="outline" title="Pop out timer">
