@@ -19,7 +19,9 @@ import { TodoItem, type TodoRow } from "@/components/todos/TodoItem";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { segmentDurationSecs } from "@/lib/timer";
 import { todayLocalDate } from "@/lib/utils";
+import { useTimerStore } from "@/stores/useTimerStore";
 import { useUserStore } from "@/stores/useUserStore";
 
 const MAX_TODOS = 20;
@@ -98,6 +100,18 @@ export function TodoList({ ownerId, date = todayLocalDate(), readOnly = false, t
   const sessionUser = useUserStore((state) => state.sessionUser);
   const [todos, setTodos] = useState<TodoRow[]>(externalTodos ?? []);
   const [text, setText] = useState("");
+
+  // Build a map of todoId → total logged seconds from linked segments.
+  // Uses the in-memory timer store so no extra DB query is needed.
+  const storeSegments = useTimerStore((state) => state.segments);
+  const todoSecondsMap = useMemo<Record<string, number>>(() => {
+    const map: Record<string, number> = {};
+    for (const seg of storeSegments) {
+      if (!seg.linked_todo_id) continue;
+      map[seg.linked_todo_id] = (map[seg.linked_todo_id] ?? 0) + segmentDurationSecs(seg);
+    }
+    return map;
+  }, [storeSegments]);
   const [isLoading, setLoading] = useState(false);
   const [isAdding, setAdding] = useState(false);
   const [processingTodoIds, setProcessingTodoIds] = useState<string[]>([]);
@@ -363,6 +377,7 @@ export function TodoList({ ownerId, date = todayLocalDate(), readOnly = false, t
                     readOnly={readOnly}
                     todo={todo}
                     isProcessing={processingTodoIds.includes(todo.id)}
+                    segmentSeconds={todoSecondsMap[todo.id] ?? 0}
                   />
                 ))}
               </ul>

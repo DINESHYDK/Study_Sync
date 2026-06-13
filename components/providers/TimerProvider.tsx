@@ -115,6 +115,7 @@ function createDemoSegment(userId: string): TimerSegment {
     started_at: now,
     ended_at: null,
     duration_secs: null,
+    linked_todo_id: null,
     created_at: now,
   };
 }
@@ -474,6 +475,7 @@ export function TimerProvider({ children }: { children: React.ReactNode }) {
           started_at: startOfDayIso,
           ended_at: null,
           duration_secs: null,
+          linked_todo_id: null,
           created_at: now,
         };
         const todayDemoSegments = [...readDemoSegments(todayDate), newDemoSegment];

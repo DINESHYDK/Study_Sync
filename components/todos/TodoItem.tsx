@@ -2,9 +2,10 @@
 
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { GripVertical, Trash2 } from "lucide-react";
+import { Clock3, GripVertical, Trash2 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
+import { formatDurationCompact } from "@/lib/timer";
 import { cn } from "@/lib/utils";
 import type { Tables } from "@/types/database";
 
@@ -16,9 +17,11 @@ type TodoItemProps = {
   onToggle: (todo: TodoRow) => void;
   onDelete: (todo: TodoRow) => void;
   isProcessing?: boolean;
+  /** Total seconds logged against this todo via linked segments. */
+  segmentSeconds?: number;
 };
 
-export function TodoItem({ todo, readOnly = false, onToggle, onDelete, isProcessing = false }: TodoItemProps) {
+export function TodoItem({ todo, readOnly = false, onToggle, onDelete, isProcessing = false, segmentSeconds = 0 }: TodoItemProps) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id: todo.id,
     disabled: readOnly || isProcessing,
@@ -56,6 +59,13 @@ export function TodoItem({ todo, readOnly = false, onToggle, onDelete, isProcess
           type="checkbox"
         />
         <span className={cn("min-w-0 truncate", todo.is_completed && "text-muted-foreground line-through")}>{todo.text}</span>
+        {/* Time-logged chip — shown when at least 1 segment links to this todo */}
+        {segmentSeconds > 0 ? (
+          <span className="ml-auto flex shrink-0 items-center gap-1 rounded-full bg-secondary px-2 py-0.5 text-[10px] font-medium text-muted-foreground">
+            <Clock3 className="h-2.5 w-2.5" />
+            {formatDurationCompact(segmentSeconds)}
+          </span>
+        ) : null}
       </label>
       {!readOnly ? (
         <Button disabled={isProcessing} onClick={() => onDelete(todo)} size="icon-sm" variant="ghost">

@@ -1,8 +1,9 @@
 "use client";
 
-import { Check, Pencil } from "lucide-react";
-import { FormEvent, useState } from "react";
+import { Check, Link2, Pencil } from "lucide-react";
+import { FormEvent, useCallback, useEffect, useState } from "react";
 
+import { useSupabase } from "@/components/providers/SupabaseProvider";
 import { useTimer } from "@/hooks/useTimer";
 import { formatDurationCompact, formatTimeRange, segmentDurationSecs, totalDurationSecs } from "@/lib/timer";
 import { cn } from "@/lib/utils";
@@ -62,9 +63,49 @@ function EditableSubject({
   );
 }
 
+// ── Batch-fetches todo text for any linked_todo_ids in the visible segments.
+function useTodoTexts(segments: TimerSegment[]): Record<string, string> {
+  const { supabase, isConfigured } = useSupabase();
+  const [textMap, setTextMap] = useState<Record<string, string>>({});
+
+  const linkedIds = segments
+    .map((s) => s.linked_todo_id)
+    .filter((id): id is string => id !== null && id !== undefined);
+
+  const idsKey = linkedIds.sort().join(",");
+
+  const fetchTexts = useCallback(
+    async (ids: string[]) => {
+      if (!isConfigured || ids.length === 0) return;
+
+      const { data } = await supabase
+        .from("todos")
+        .select("id, text")
+        .in("id", ids);
+
+      if (data) {
+        const map: Record<string, string> = {};
+        for (const row of data) map[row.id] = row.text;
+        setTextMap((prev) => ({ ...prev, ...map }));
+      }
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [isConfigured, idsKey, supabase],
+  );
+
+  useEffect(() => {
+    void fetchTexts(linkedIds);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [idsKey, fetchTexts]);
+
+  return textMap;
+}
+
 export function SessionSegmentList({ segments, readOnly = false, title = "Session History" }: SessionSegmentListProps) {
   const isHydrated = useTimerStore((state) => state.isHydrated);
   const total = totalDurationSecs(segments);
+  // Resolve linked todo labels for display (batched single query).
+  const todoTexts = useTodoTexts(segments);
 
   if (!isHydrated && !readOnly) {
     return (
@@ -115,6 +156,15 @@ export function SessionSegmentList({ segments, readOnly = false, title = "Sessio
                         {running ? <span className="h-2.5 w-2.5 shrink-0 animate-pulse rounded-full bg-emerald-400" /> : null}
                         <EditableSubject readOnly={readOnly} segment={segment} />
                       </div>
+                      {/* Linked task chip */}
+                      {segment.linked_todo_id ? (
+                        <span className="mt-1 flex items-center gap-1 text-[10px] text-muted-foreground">
+                          <Link2 className="h-3 w-3 shrink-0" />
+                          <span className="truncate">
+                            {todoTexts[segment.linked_todo_id] ?? "Linked task"}
+                          </span>
+                        </span>
+                      ) : null}
                     </div>
                     <div className="min-w-0 text-muted-foreground">
                       <span className="mb-1 block text-[10px] font-semibold uppercase text-muted-foreground sm:hidden">

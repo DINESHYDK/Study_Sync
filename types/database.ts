@@ -74,6 +74,7 @@ export type Database = {
           started_at: string;
           ended_at: string | null;
           duration_secs: number | null;
+          linked_todo_id: string | null;
           created_at: string;
         };
         Insert: {
@@ -83,6 +84,7 @@ export type Database = {
           subject_name?: string;
           started_at: string;
           ended_at?: string | null;
+          linked_todo_id?: string | null;
           created_at?: string;
         };
         Update: {
@@ -92,6 +94,7 @@ export type Database = {
           subject_name?: string;
           started_at?: string;
           ended_at?: string | null;
+          linked_todo_id?: string | null;
           created_at?: string;
         };
         Relationships: [
@@ -107,6 +110,13 @@ export type Database = {
             columns: ["user_id"];
             isOneToOne: false;
             referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "session_segments_linked_todo_id_fkey";
+            columns: ["linked_todo_id"];
+            isOneToOne: false;
+            referencedRelation: "todos";
             referencedColumns: ["id"];
           },
         ];
