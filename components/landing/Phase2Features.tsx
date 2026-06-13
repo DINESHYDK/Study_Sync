@@ -155,8 +155,8 @@ function TodoTimerPreview() {
 
 function CommentsPreview() {
   const comments = [
-    { name: "Arjun", avatar: "A", body: "4 hours already? 🔥 Let's gooo", time: "2m ago" },
-    { name: "Priya", avatar: "P", body: "You're ahead of me today, catch you tmrw 😅", time: "just now" },
+    { name: "Eswar", avatar: "E", body: "4 hours already? 🔥 Let's gooo", time: "2m ago" },
+    { name: "Dinesh", avatar: "D", body: "Badkov, em peekutunnav ra morning nundi?", time: "just now" },
   ];
 
   return (
@@ -333,12 +333,12 @@ export function Phase2Features() {
     <section className="px-4 py-24 md:px-8 lg:px-16" id="whats-new">
       <div className="mx-auto max-w-6xl">
         {/* Heading */}
-        <FadeIn className="mx-auto mb-16 max-w-3xl text-center" data-anim="section-heading">
+        <FadeIn className="mx-auto mb-16 max-w-3xl text-center">
           <p className={cn("text-sm font-bold uppercase tracking-[0.28em]", landingPalette.label)}>
             What&apos;s New
           </p>
           <h2 className="mt-3 font-heading text-2xl font-bold tracking-normal md:text-4xl">
-            Phase 2 — Built from your feedback.
+            Version 2 — Built from your feedback.
           </h2>
           <p className="mx-auto mt-4 max-w-2xl text-base leading-8 text-[var(--text-muted)]">
             Five major additions shipped in one go. All of them requested by real students.
@@ -355,7 +355,6 @@ export function Phase2Features() {
               <FadeIn delay={i * 0.06} key={feat.label}>
                 <Card
                   className="group flex h-full flex-col overflow-hidden border-[var(--border-strong)] bg-[var(--surface-strong)] transition-all duration-300 hover:border-[var(--border-strong)]/80 hover:shadow-[0_0_40px_rgba(108,99,255,0.08)]"
-                  data-anim="feature-card"
                 >
                   <CardContent className="flex flex-1 flex-col gap-5 p-6">
                     {/* Label + icon */}
