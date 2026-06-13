@@ -31,7 +31,7 @@ export function HowItWorks() {
   return (
     <section className="px-4 py-24 md:px-8 lg:px-16" id="how-it-works">
       <div className="mx-auto max-w-6xl">
-        <FadeIn className="mx-auto mb-14 max-w-2xl text-center">
+        <FadeIn className="mx-auto mb-14 max-w-2xl text-center" data-anim="section-heading">
           <h2 className="font-heading text-2xl font-bold tracking-normal md:text-4xl">How It Works</h2>
           <p className="mt-3 text-lg text-[var(--text-muted)]">Up and running in under 2 minutes.</p>
         </FadeIn>

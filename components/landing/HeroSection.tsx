@@ -58,7 +58,7 @@ export function HeroSection() {
           <p className="text-sm text-[var(--text-muted)]" data-anim="hero-sub">No credit card · Email sign-up only · Free forever</p>
         </FadeIn>
       </div>
-      <FadeIn className="mt-12 w-full max-w-5xl" delay={0.12}>
+      <FadeIn className="mt-12 w-full max-w-5xl" data-anim="timer-preview" delay={0.12}>
         <TimerPreview />
       </FadeIn>
     </section>

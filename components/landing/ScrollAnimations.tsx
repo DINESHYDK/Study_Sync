@@ -41,6 +41,15 @@ export function ScrollAnimations() {
         delay: 0.25,
       });
 
+      // ── 2b. Hero timer preview ────────────────────────────────────────────
+      gsap.from("[data-anim='timer-preview']", {
+        y: 48,
+        opacity: 0,
+        duration: 0.8,
+        ease: "power3.out",
+        delay: 0.45,
+      });
+
       // ── 3. Hero parallax background orb ───────────────────────────────────
       gsap.to("[data-anim='hero-orb']", {
         y: -90,
@@ -160,17 +169,19 @@ export function ScrollAnimations() {
       }
 
       // ── 8. Section headings ────────────────────────────────────────────────
-      gsap.from("[data-anim='section-heading']", {
-        y: 32,
-        opacity: 0,
-        duration: 0.65,
-        ease: "power2.out",
-        stagger: 0.1,
-        scrollTrigger: {
-          trigger: "[data-anim='section-heading']",
-          start: "top 88%",
-          once: true,
-        },
+      const headings = gsap.utils.toArray<Element>("[data-anim='section-heading']");
+      headings.forEach((heading) => {
+        gsap.from(heading, {
+          y: 32,
+          opacity: 0,
+          duration: 0.65,
+          ease: "power2.out",
+          scrollTrigger: {
+            trigger: heading,
+            start: "top 88%",
+            once: true,
+          },
+        });
       });
     });
 

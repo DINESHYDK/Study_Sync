@@ -8,7 +8,7 @@ import { cn } from "@/lib/utils";
 export function MobileOptimized() {
   return (
     <section className="px-4 py-24 text-center md:px-8 lg:px-16">
-      <FadeIn className="mx-auto max-w-3xl">
+      <FadeIn className="mx-auto max-w-3xl" data-anim="section-heading">
         <p className={cn("text-sm font-bold uppercase tracking-[0.28em]", landingPalette.label)}>Study Anywhere</p>
         <h2 className="mt-3 font-heading text-2xl font-bold tracking-normal md:text-4xl">
           Built for your phone, not just your desk.

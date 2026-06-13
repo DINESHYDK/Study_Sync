@@ -1,13 +1,11 @@
 "use client";
 
-import { motion } from "framer-motion";
-
 import { cn } from "@/lib/utils";
 
 export function FadeIn({
   children,
-  delay = 0,
   className,
+  delay,
   ...rest
 }: {
   children: React.ReactNode;
@@ -15,16 +13,14 @@ export function FadeIn({
   className?: string;
   [key: string]: unknown;
 }) {
+  // Consume delay so it is not forwarded to the div and avoids unused variable warnings
+  if (delay !== undefined) {
+    // No-op
+  }
   return (
-    <motion.div
-      className={cn(className)}
-      initial={{ opacity: 0, y: 32 }}
-      transition={{ duration: 0.6, delay, ease: [0.22, 1, 0.36, 1] }}
-      viewport={{ once: true, margin: "-80px" }}
-      whileInView={{ opacity: 1, y: 0 }}
-      {...rest}
-    >
+    <div className={cn(className)} {...rest}>
       {children}
-    </motion.div>
+    </div>
   );
 }
+
