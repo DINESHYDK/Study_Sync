@@ -15,6 +15,7 @@ export function useRealtime() {
   const friends = useFriendStore((state) => state.friends);
   const { loadFriends, loadIncomingRequests, acceptRequest, declineRequest } = useFriends();
 
+  // ── Friend-activity + friend-request realtime ────────────────────────────────
   useEffect(() => {
     if (!isConfigured || !profile) {
       return;
@@ -42,7 +43,7 @@ export function useRealtime() {
         table: "friend_requests",
         filter: `requested_id=eq.${profile.id}`,
       },
-      async (payload: any) => {
+      async (payload: { new: { id: string; requester_id: string } }) => {
         const requesterId = payload.new.requester_id;
         const { data: requesterProfile } = await supabase
           .from("profiles")
@@ -52,7 +53,7 @@ export function useRealtime() {
 
         const senderName = requesterProfile?.full_name || requesterProfile?.email || "Someone";
 
-        const toastId = toast.custom((t) => (
+        toast.custom((t) => (
           <div className="flex w-full flex-col gap-3 rounded-2xl border border-border bg-card p-4 shadow-glow max-w-sm">
             <div className="flex items-center gap-2">
               <span className="text-xl">🙋</span>
@@ -98,4 +99,54 @@ export function useRealtime() {
       void supabase.removeChannel(channel);
     };
   }, [friends, isConfigured, loadFriends, loadIncomingRequests, acceptRequest, declineRequest, profile, supabase]);
+
+  // ── Comment notifications on MY sessions ────────────────────────────────────
+  // Separate channel so it isn't torn down every time the friends list changes.
+  useEffect(() => {
+    if (!isConfigured || !profile) return;
+
+    const channel = supabase.channel(`my-session-comments-${profile.id}`);
+
+    channel.on(
+      "postgres_changes",
+      {
+        event: "INSERT",
+        schema: "public",
+        table: "session_comments",
+      },
+      async (payload: { new: { id: string; session_id: string; author_id: string; body: string } }) => {
+        const { session_id, author_id, body } = payload.new;
+
+        // Ignore comments posted by the current user themselves.
+        if (author_id === profile.id) return;
+
+        // Only notify if this comment is on one of MY study sessions.
+        const { data: session } = await supabase
+          .from("study_sessions")
+          .select("id")
+          .eq("id", session_id)
+          .eq("user_id", profile.id)
+          .maybeSingle();
+
+        if (!session) return;
+
+        const { data: authorProfile } = await supabase
+          .from("profiles")
+          .select("full_name, email")
+          .eq("id", author_id)
+          .single();
+
+        const authorName = authorProfile?.full_name || authorProfile?.email || "Someone";
+        const preview = body.length > 60 ? `${body.slice(0, 60)}…` : body;
+
+        toast.info(`💬 ${authorName}: "${preview}"`);
+      },
+    );
+
+    channel.subscribe();
+
+    return () => {
+      void supabase.removeChannel(channel);
+    };
+  }, [isConfigured, profile, supabase]);
 }

@@ -8,6 +8,7 @@ import { motion } from "framer-motion";
 
 import { UserAvatar } from "@/components/avatar/UserAvatar";
 import { useSupabase } from "@/components/providers/SupabaseProvider";
+import { CommentSection } from "@/components/friends/CommentSection";
 import { SessionSegmentList } from "@/components/timer/SessionSegmentList";
 import { TodoList } from "@/components/todos/TodoList";
 import { Button } from "@/components/ui/button";
@@ -24,6 +25,8 @@ type Metric = "study_time" | "tasks_completed";
 
 type UserDayData = {
   profile: UserProfile;
+  /** null when the user has no study_session for this date. */
+  sessionId: string | null;
   segments: Tables<"session_segments">[];
   todos: Tables<"todos">[];
 };
@@ -53,6 +56,7 @@ async function loadDayData(
 
   return {
     profile: userProfile,
+    sessionId: session?.id ?? null,
     segments: segments ?? [],
     todos: todos ?? [],
   };
@@ -81,9 +85,19 @@ function winnerText(left: UserDayData, right: UserDayData, metric: Metric) {
   return `🏆 ${winner.profile.full_name || winner.profile.email} wins by ${formattedDifference}!`;
 }
 
-function ComparisonColumn({ data, highlighted }: { data: UserDayData; highlighted: boolean }) {
+function ComparisonColumn({
+  data,
+  highlighted,
+  myProfileId,
+}: {
+  data: UserDayData;
+  highlighted: boolean;
+  myProfileId: string;
+}) {
   const total = totalDurationSecs(data.segments);
   const completedTodos = data.todos.filter((todo) => todo.is_completed).length;
+  // The current user cannot comment on their own session.
+  const isOwnColumn = data.profile.id === myProfileId;
 
   return (
     <motion.div
@@ -109,6 +123,13 @@ function ComparisonColumn({ data, highlighted }: { data: UserDayData; highlighte
         </div>
         <SessionSegmentList readOnly segments={data.segments} title="Segments" />
         <TodoList readOnly todos={data.todos} title="Tasks" />
+        {/* Comments — disabled on own column, enabled for friend columns */}
+        {data.sessionId ? (
+          <CommentSection
+            canPost={!isOwnColumn}
+            sessionId={data.sessionId}
+          />
+        ) : null}
       </div>
     </motion.div>
   );
@@ -212,8 +233,8 @@ export function ComparisonView({ friendId }: { friendId: string }) {
             {winnerText(left, right, metric)}
           </div>
           <div className="grid min-w-0 w-full gap-5 xl:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
-            <ComparisonColumn data={left} highlighted={scores.leftWins} />
-            <ComparisonColumn data={right} highlighted={scores.rightWins} />
+            <ComparisonColumn data={left} highlighted={scores.leftWins} myProfileId={profile!.id} />
+            <ComparisonColumn data={right} highlighted={scores.rightWins} myProfileId={profile!.id} />
           </div>
         </>
       ) : (
