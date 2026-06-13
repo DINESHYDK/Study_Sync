@@ -9,6 +9,9 @@ import { SessionSegmentList } from "@/components/timer/SessionSegmentList";
 import { TimerPanel } from "@/components/timer/TimerPanel";
 import { TodoList } from "@/components/todos/TodoList";
 import { Card, CardContent } from "@/components/ui/card";
+import { DashboardSkeleton } from "@/components/ui/skeletons";
+import { StreakBadge } from "@/components/stats/StreakBadge";
+import { SubjectChart } from "@/components/stats/SubjectChart";
 import { useFriendStore } from "@/stores/useFriendStore";
 import { useTimerStore } from "@/stores/useTimerStore";
 import { useUserStore } from "@/stores/useUserStore";
@@ -30,9 +33,15 @@ function greeting() {
 export default function DashboardPage() {
   const profile = useUserStore((state) => state.profile);
   const segments = useTimerStore((state) => state.segments);
+  const isHydrated = useTimerStore((state) => state.isHydrated);
   const friends = useFriendStore((state) => state.friends);
   const isLoadingFriends = useFriendStore((state) => state.isLoading);
   const { isConfigured } = useSupabase();
+
+  // Show the skeleton until the timer store has hydrated from localStorage/DB.
+  if (!isHydrated) {
+    return <DashboardSkeleton />;
+  }
 
   return (
     <div className="flex flex-col gap-6 min-w-0 w-full">
@@ -43,6 +52,7 @@ export default function DashboardPage() {
             {greeting()}, {profile?.full_name?.split(" ")[0] || "there"}
           </h1>
         </div>
+        <StreakBadge />
       </header>
 
       {!isConfigured ? (
@@ -56,6 +66,7 @@ export default function DashboardPage() {
 
       <TimerPanel />
       <SessionSegmentList segments={segments} />
+      <SubjectChart />
       <TodoList />
 
       <section className="flex flex-col gap-3 min-w-0 w-full">

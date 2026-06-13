@@ -15,6 +15,7 @@ import { TimerFullscreen } from "@/components/timer/TimerFullscreen";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
+import { PageTransition } from "@/components/layout/PageTransition";
 import { useFriends } from "@/hooks/useFriends";
 import { useRealtime } from "@/hooks/useRealtime";
 import { cn } from "@/lib/utils";
@@ -22,6 +23,7 @@ import { useUserStore } from "@/stores/useUserStore";
 
 const navItems = [
   { href: "/dashboard", label: "Dashboard", icon: Clock3 },
+  { href: "/history", label: "History", icon: BookOpenCheck },
   { href: "/friends", label: "Friends", icon: Users },
   { href: "/settings", label: "Settings", icon: Settings },
 ] as const;
@@ -127,7 +129,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
       {isMobileOpen ? <div className="fixed inset-0 z-50 bg-background lg:hidden">{sidebar}</div> : null}
 
-      <main className="min-w-0 max-w-full overflow-x-clip px-4 py-6 sm:px-6 lg:px-8">{children}</main>
+      <main className="min-w-0 max-w-full overflow-x-clip px-4 py-6 sm:px-6 lg:px-8">
+        <PageTransition>{children}</PageTransition>
+      </main>
       <TimerPopup />
       <TimerFullscreen />
       <SubjectNameModal />

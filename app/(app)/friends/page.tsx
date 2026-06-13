@@ -3,6 +3,7 @@
 import { AddFriendDialog } from "@/components/friends/AddFriendDialog";
 import { FriendCard } from "@/components/friends/FriendCard";
 import { Card, CardContent } from "@/components/ui/card";
+import { FriendsPageSkeleton } from "@/components/ui/skeletons";
 import { useFriendStore } from "@/stores/useFriendStore";
 
 export default function FriendsPage() {
@@ -25,11 +26,7 @@ export default function FriendsPage() {
       </header>
 
       {isLoading ? (
-        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3 animate-pulse">
-          <div className="h-44 bg-secondary/50 rounded-2xl border border-border" />
-          <div className="h-44 bg-secondary/50 rounded-2xl border border-border" />
-          <div className="h-44 bg-secondary/50 rounded-2xl border border-border" />
-        </div>
+        <FriendsPageSkeleton />
       ) : friends.length === 0 ? (
         <Card>
           <CardContent className="p-8 text-sm text-muted-foreground">

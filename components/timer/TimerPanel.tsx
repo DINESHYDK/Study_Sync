@@ -1,7 +1,8 @@
 "use client";
 
-import { Maximize2, Pause, Play, PictureInPicture2 } from "lucide-react";
+import { Loader2, Maximize2, Pause, Play, PictureInPicture2 } from "lucide-react";
 import { motion } from "framer-motion";
+import { useCallback, useState } from "react";
 
 import { cn } from "@/lib/utils";
 
@@ -14,7 +15,7 @@ import { Badge } from "@/components/ui/badge";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 
 export function TimerPanel() {
-  const { resumeTimer, pauseTimer, isToggling } = useTimer();
+  const { resumeTimer, pauseTimer } = useTimer();
   const status = useTimerStore((state) => state.status);
   const currentElapsedSeconds = useTimerStore((state) => state.currentElapsedSeconds);
   const todayTotalSeconds = useTimerStore((state) => state.todayTotalSeconds);
@@ -23,17 +24,33 @@ export function TimerPanel() {
   const setFullscreen = useTimerStore((state) => state.setFullscreen);
   const isRunning = status === "running";
 
+  // Local debounce guard: prevents double-clicks from firing concurrent DB calls.
+  const [isSubmitting, setSubmitting] = useState(false);
+
+  const handleToggle = useCallback(async () => {
+    if (isSubmitting) return;
+    setSubmitting(true);
+    try {
+      if (status === "running") {
+        await pauseTimer({ showSubjectModal: true });
+      } else {
+        await resumeTimer();
+      }
+    } finally {
+      setSubmitting(false);
+    }
+  }, [isSubmitting, pauseTimer, resumeTimer, status]);
+
   const handlePopOut = async () => {
     if (typeof window !== "undefined" && "documentPictureInPicture" in window) {
       try {
-        const pip = await (window as any).documentPictureInPicture.requestWindow({
+        const pip = await (window as Window & { documentPictureInPicture: { requestWindow: (opts: { width: number; height: number }) => Promise<Window> } }).documentPictureInPicture.requestWindow({
           width: 320,
           height: 220,
         });
         setPipWindow(pip);
         setPopupOpen(true);
-      } catch (err) {
-        console.error("Failed to open PiP window, falling back to overlay", err);
+      } catch {
         setPopupOpen(true);
       }
     } else {
@@ -52,7 +69,7 @@ export function TimerPanel() {
           <Badge variant={isRunning ? "success" : "secondary"}>{isRunning ? "Running" : status === "paused" ? "Paused" : "Idle"}</Badge>
           <Tooltip>
             <TooltipTrigger asChild>
-              <Button onClick={handlePopOut} size="icon" variant="outline" title="Pop out timer">
+              <Button onClick={() => void handlePopOut()} size="icon" variant="outline" title="Pop out timer">
                 <PictureInPicture2 className="h-4 w-4" />
                 <span className="sr-only">Pop out timer</span>
               </Button>
@@ -84,35 +101,31 @@ export function TimerPanel() {
           <Button
             className={cn(
               "w-full py-6 text-lg font-semibold transition-all duration-300",
-              status === "running" ? "animate-pulse-glow" : ""
+              status === "running" ? "animate-pulse-glow" : "",
             )}
-            disabled={isToggling}
-            onClick={() => {
-              if (status === "running") {
-                void pauseTimer({ showSubjectModal: true });
-              } else {
-                void resumeTimer();
-              }
-            }}
+            disabled={isSubmitting}
+            onClick={() => void handleToggle()}
             size="lg"
             variant={status === "running" ? "destructive" : "success"}
           >
-            {status === "running" ? (
+            {isSubmitting ? (
+              <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+            ) : status === "running" ? (
               <Pause className="mr-2 h-5 w-5" />
             ) : (
               <Play className="mr-2 h-5 w-5" />
             )}
-            {isToggling
+            {isSubmitting
               ? status === "running"
                 ? "Pausing..."
                 : status === "paused"
-                ? "Resuming..."
-                : "Starting..."
+                  ? "Resuming..."
+                  : "Starting..."
               : status === "running"
-              ? "Pause"
-              : status === "paused"
-              ? "Resume"
-              : "Start"}
+                ? "Pause"
+                : status === "paused"
+                  ? "Resume"
+                  : "Start"}
           </Button>
         </div>
       </CardContent>

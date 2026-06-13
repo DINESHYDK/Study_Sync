@@ -14,6 +14,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { ComparisonSkeleton } from "@/components/ui/skeletons";
 import { formatDurationCompact, totalDurationSecs } from "@/lib/timer";
 import { todayLocalDate } from "@/lib/utils";
 import { useUserStore, type UserProfile } from "@/stores/useUserStore";
@@ -204,30 +205,7 @@ export function ComparisonView({ friendId }: { friendId: string }) {
       </div>
 
       {isLoading ? (
-        <div className="grid min-w-0 w-full animate-pulse gap-5 xl:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
-          <div className="rounded-2xl border border-border bg-card/20 p-5 space-y-5">
-            <div className="flex items-center gap-3">
-              <div className="h-10 w-10 rounded-full bg-secondary" />
-              <div className="space-y-2 flex-1">
-                <div className="h-4 w-24 bg-secondary rounded" />
-                <div className="h-3 w-32 bg-secondary rounded" />
-              </div>
-            </div>
-            <div className="h-44 bg-secondary/50 rounded-xl" />
-            <div className="h-44 bg-secondary/50 rounded-xl" />
-          </div>
-          <div className="rounded-2xl border border-border bg-card/20 p-5 space-y-5">
-            <div className="flex items-center gap-3">
-              <div className="h-10 w-10 rounded-full bg-secondary" />
-              <div className="space-y-2 flex-1">
-                <div className="h-4 w-24 bg-secondary rounded" />
-                <div className="h-3 w-32 bg-secondary rounded" />
-              </div>
-            </div>
-            <div className="h-44 bg-secondary/50 rounded-xl" />
-            <div className="h-44 bg-secondary/50 rounded-xl" />
-          </div>
-        </div>
+        <ComparisonSkeleton />
       ) : left && right ? (
         <>
           <div className="overflow-hidden rounded-2xl border border-amber-500/30 bg-amber-500/10 p-5 text-center font-heading text-xl font-semibold text-amber-100 sm:text-2xl">

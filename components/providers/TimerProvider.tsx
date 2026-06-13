@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { format } from "date-fns";
 import { toast } from "sonner";
 
 import { useSupabase } from "@/components/providers/SupabaseProvider";
@@ -412,6 +413,141 @@ export function TimerProvider({ children }: { children: React.ReactNode }) {
     [isConfigured, profile, supabase, updateLocalSegmentSubject],
   );
 
+  /**
+   * Splits a running segment at midnight when the user studies past 00:00.
+   * - Closes the current segment at 23:59:59 (local) of the started date.
+   * - Creates a new study_session (upsert) for the new date.
+   * - Inserts a new segment starting at 00:00:00 (local) of the new date.
+   * - Carries the subject name forward so context is preserved.
+   * - Calls loadToday() to re-hydrate the store with the new day's data.
+   * - The timer continues running without any interruption to the user.
+   */
+  const splitSegmentAtMidnight = useCallback(async () => {
+    if (status !== "running" || !profile || !activeSegmentId || !activeStartedAt) {
+      return;
+    }
+
+    // Derive the LOCAL calendar date the segment started on.
+    const startedLocalDate = format(new Date(activeStartedAt), "yyyy-MM-dd");
+    const todayDate = todayLocalDate();
+
+    // Same local date — no midnight crossing, nothing to do.
+    if (startedLocalDate === todayDate) {
+      return;
+    }
+
+    // Reuse the existing mutex so we don't race with pause/resume.
+    if (isTogglingRef.current) {
+      return;
+    }
+    isTogglingRef.current = true;
+
+    try {
+      const [year, month, day] = startedLocalDate.split("-").map(Number);
+      const endOfDay = new Date(year, month - 1, day, 23, 59, 59);
+      const endOfDayIso = endOfDay.toISOString();
+
+      // Imperatively read the subject name without adding a React subscription.
+      const currentSegments = useTimerStore.getState().segments;
+      const runningSegment = currentSegments.find((s) => s.id === activeSegmentId);
+      const subjectName = runningSegment?.subject_name ?? "General";
+
+      if (!isConfigured) {
+        // ── Demo (localStorage) mode ─────────────────────────────────────────
+        const oldSegments = readDemoSegments(startedLocalDate);
+        const patchedOldSegments = oldSegments.map((seg) =>
+          seg.id === activeSegmentId
+            ? { ...seg, ended_at: endOfDayIso, duration_secs: secondsBetween(seg.started_at, endOfDayIso) }
+            : seg,
+        );
+        writeDemoSegments(startedLocalDate, patchedOldSegments);
+        clearActiveSegment();
+
+        const [ny, nm, nd] = todayDate.split("-").map(Number);
+        const startOfDayIso = new Date(ny, nm - 1, nd, 0, 0, 0).toISOString();
+        const now = new Date().toISOString();
+        const newDemoSegment: TimerSegment = {
+          id: crypto.randomUUID(),
+          session_id: DEMO_SESSION_ID,
+          user_id: profile.id,
+          subject_name: subjectName,
+          started_at: startOfDayIso,
+          ended_at: null,
+          duration_secs: null,
+          created_at: now,
+        };
+        const todayDemoSegments = [...readDemoSegments(todayDate), newDemoSegment];
+        writeDemoSegments(todayDate, todayDemoSegments);
+        saveActiveSegment(newDemoSegment.id);
+        await loadToday();
+        toast.info("Session continued into a new day");
+        return;
+      }
+
+      // ── Supabase mode ────────────────────────────────────────────────────
+      // Step 1: Close old segment at 23:59:59 of started date.
+      const { error: updateError } = await supabase
+        .from("session_segments")
+        .update({ ended_at: endOfDayIso })
+        .eq("id", activeSegmentId)
+        .eq("user_id", profile.id)
+        .is("ended_at", null);
+
+      if (updateError) {
+        toast.error(updateError.message);
+        return;
+      }
+
+      // Step 2: Upsert a study_session row for the new date.
+      const { data: newSession, error: sessionError } = await supabase
+        .from("study_sessions")
+        .upsert({ user_id: profile.id, date: todayDate }, { onConflict: "user_id,date" })
+        .select("id")
+        .single();
+
+      if (sessionError || !newSession) {
+        toast.error(sessionError?.message ?? "Could not create session for new day.");
+        return;
+      }
+
+      // Step 3: Insert new segment starting at 00:00:00 local time of new date.
+      const [ny, nm, nd] = todayDate.split("-").map(Number);
+      const startOfDayIso = new Date(ny, nm - 1, nd, 0, 0, 0).toISOString();
+
+      const { data: newSegment, error: segmentError } = await supabase
+        .from("session_segments")
+        .insert({
+          session_id: newSession.id,
+          user_id: profile.id,
+          subject_name: subjectName,
+          started_at: startOfDayIso,
+          ended_at: null,
+        })
+        .select("*")
+        .single();
+
+      if (segmentError || !newSegment) {
+        toast.error(segmentError?.message ?? "Could not create segment for new day.");
+        return;
+      }
+
+      // Step 4: Persist new segment ID and reload today's store data.
+      saveActiveSegment(newSegment.id);
+      await loadToday();
+      toast.info("Session continued into a new day");
+    } finally {
+      isTogglingRef.current = false;
+    }
+  }, [
+    activeSegmentId,
+    activeStartedAt,
+    isConfigured,
+    loadToday,
+    profile,
+    status,
+    supabase,
+  ]);
+
   useEffect(() => {
     const popup = readPopupState();
 
@@ -502,26 +638,24 @@ export function TimerProvider({ children }: { children: React.ReactNode }) {
     };
   }, [activeSegmentId, isConfigured, pauseTimer, status, tick]);
 
+  // ── Cross-day segment split ────────────────────────────────────────────────
+  // Poll every 60 s while running. If the local date has changed since the
+  // segment started, splitSegmentAtMidnight silently closes the old segment and
+  // opens a fresh one for the new day. The timer keeps ticking uninterrupted.
   useEffect(() => {
     if (status !== "running" || !activeStartedAt) {
       return;
     }
 
-    const startedDate = activeStartedAt.slice(0, 10);
+    // Run once immediately in case the app was restored after a crossing.
+    void splitSegmentAtMidnight();
+
     const intervalId = window.setInterval(() => {
-      if (todayLocalDate() !== startedDate) {
-        const [year, month, day] = startedDate.split("-").map(Number);
-        const endOfDayLocal = new Date(year, month - 1, day, 23, 59, 59);
-        void pauseTimer({
-          endedAt: endOfDayLocal.toISOString(),
-          showSubjectModal: false,
-          toastMessage: "Timer auto-paused at midnight",
-        });
-      }
+      void splitSegmentAtMidnight();
     }, 60_000);
 
     return () => window.clearInterval(intervalId);
-  }, [activeStartedAt, pauseTimer, status]);
+  }, [activeStartedAt, splitSegmentAtMidnight, status]);
 
   const value = useMemo(
     () => ({
