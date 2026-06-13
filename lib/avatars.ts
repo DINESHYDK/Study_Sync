@@ -1,22 +1,22 @@
 export type AvatarOption = {
   id: string;
-  emoji: string;
+  url: string;
   label: string;
 };
 
 export const AVATARS = [
-  { id: "fox", emoji: "🦊", label: "Fox" },
-  { id: "rocket", emoji: "🚀", label: "Rocket" },
-  { id: "owl", emoji: "🦉", label: "Owl" },
-  { id: "dragon", emoji: "🐉", label: "Dragon" },
-  { id: "robot", emoji: "🤖", label: "Robot" },
-  { id: "ninja", emoji: "🥷", label: "Ninja" },
-  { id: "astronaut", emoji: "👨‍🚀", label: "Astronaut" },
-  { id: "wizard", emoji: "🧙", label: "Wizard" },
-  { id: "panda", emoji: "🐼", label: "Panda" },
-  { id: "tiger", emoji: "🐯", label: "Tiger" },
-  { id: "phoenix", emoji: "🔥", label: "Phoenix" },
-  { id: "ghost", emoji: "👻", label: "Ghost" },
+  { id: "explorer", url: "https://api.dicebear.com/7.x/adventurer/svg?seed=explorer", label: "Explorer" },
+  { id: "scholar", url: "https://api.dicebear.com/7.x/lorelei/svg?seed=scholar", label: "Scholar" },
+  { id: "coder", url: "https://api.dicebear.com/7.x/bottts/svg?seed=coder", label: "Coder" },
+  { id: "creator", url: "https://api.dicebear.com/7.x/croodles/svg?seed=creator", label: "Creator" },
+  { id: "artist", url: "https://api.dicebear.com/7.x/lorelei/svg?seed=artist", label: "Artist" },
+  { id: "gamer", url: "https://api.dicebear.com/7.x/pixel-art/svg?seed=gamer", label: "Gamer" },
+  { id: "cyborg", url: "https://api.dicebear.com/7.x/bottts/svg?seed=cyborg", label: "Cyborg" },
+  { id: "ninja", url: "https://api.dicebear.com/7.x/bottts/svg?seed=ninja", label: "Ninja" },
+  { id: "hero", url: "https://api.dicebear.com/7.x/adventurer/svg?seed=hero", label: "Hero" },
+  { id: "chef", url: "https://api.dicebear.com/7.x/lorelei/svg?seed=chef", label: "Chef" },
+  { id: "space", url: "https://api.dicebear.com/7.x/bottts/svg?seed=space", label: "Astronaut" },
+  { id: "pixel", url: "https://api.dicebear.com/7.x/pixel-art/svg?seed=pixel", label: "Retro" },
 ] as const satisfies readonly AvatarOption[];
 
 export const AVATAR_ACCENTS = [

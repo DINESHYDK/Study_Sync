@@ -11,7 +11,7 @@ import { ScrollAnimations } from "@/components/landing/ScrollAnimations";
 
 export default function HomePage() {
   return (
-    <div className="overflow-x-hidden scroll-smooth bg-[#0a0a0f]">
+    <div className="overflow-x-clip scroll-smooth bg-[#0a0a0f]">
       {/* GSAP scroll animations — client-only, renders null */}
       <ScrollAnimations />
       <Navbar />

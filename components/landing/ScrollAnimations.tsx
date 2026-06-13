@@ -62,8 +62,23 @@ export function ScrollAnimations() {
         },
       });
 
-      // ── 4. Features grid — batch stagger ──────────────────────────────────
-      ScrollTrigger.batch("[data-anim='feature-card']", {
+      // ── 4a. Features grid — batch stagger ─────────────────────────────────
+      ScrollTrigger.batch("#features [data-anim='feature-card']", {
+        onEnter: (batch) => {
+          gsap.from(batch, {
+            y: 48,
+            opacity: 0,
+            duration: 0.6,
+            ease: "power2.out",
+            stagger: 0.07,
+          });
+        },
+        start: "top 88%",
+        once: true,
+      });
+
+      // ── 4b. What's new grid — batch stagger ───────────────────────────────
+      ScrollTrigger.batch("#whats-new [data-anim='feature-card']", {
         onEnter: (batch) => {
           gsap.from(batch, {
             y: 48,

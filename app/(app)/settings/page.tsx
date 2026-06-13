@@ -261,7 +261,7 @@ export default function SettingsPage() {
               </button>
               {AVATARS.map((avatar) => (
                 <button
-                  className={`rounded-xl border p-3 text-center transition hover:border-violet-400 ${
+                  className={`flex flex-col items-center justify-center rounded-xl border p-2 text-center transition hover:border-violet-400 ${
                     profile.avatar_id === avatar.id ? "border-violet-400 bg-violet-500/10" : "border-border bg-secondary"
                   }`}
                   disabled={isUpdatingAvatar}
@@ -269,8 +269,8 @@ export default function SettingsPage() {
                   onClick={() => void selectAvatar(avatar.id)}
                   type="button"
                 >
-                  <span className="block text-2xl">{avatar.emoji}</span>
-                  <span className="mt-1 block truncate text-xs text-muted-foreground">{avatar.label}</span>
+                  <img src={avatar.url} alt={avatar.label} className="h-10 w-10 object-contain rounded-full bg-background" />
+                  <span className="mt-1 block w-full truncate text-[10px] text-muted-foreground">{avatar.label}</span>
                 </button>
               ))}
             </div>
