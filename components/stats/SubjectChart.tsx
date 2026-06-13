@@ -12,13 +12,13 @@ import { useUserStore } from "@/stores/useUserStore";
 
 // ── Constants ──────────────────────────────────────────────────────────────────
 
-const RADIUS = 72;
-const STROKE_WIDTH = 28;
-const CENTER = 100;
-const VIEW_SIZE = 200;
+const RADIUS = 100;
+const STROKE_WIDTH = 32;
+const CENTER = 140;
+const VIEW_SIZE = 280;
 const CIRCUMFERENCE = 2 * Math.PI * RADIUS;
-// Arc-to-arc gap in SVG user units (looks like ~1.5° of arc).
-const GAP = (CIRCUMFERENCE / 360) * 1.5;
+// Arc-to-arc gap in SVG user units.
+const GAP = (CIRCUMFERENCE / 360) * 1.2;
 // Cycle through these six accent colours.
 const PALETTE = [
   "#6c63ff", // violet  (primary)
@@ -268,8 +268,8 @@ export function SubjectChart() {
             Start studying to see your breakdown.
           </div>
         ) : (
-          <div className="flex flex-col items-center gap-6 sm:flex-row sm:items-start sm:gap-8">
-            {/* ── SVG Doughnut ───────────────────────────────────────────── */}
+          <div className="flex flex-col items-center gap-8">
+            {/* ── SVG Doughnut — centred ──────────────────────────────────── */}
             <div className="relative shrink-0">
               <svg
                 aria-label="Subject breakdown donut chart"
@@ -288,7 +288,7 @@ export function SubjectChart() {
                   strokeWidth={STROKE_WIDTH}
                 />
 
-                {/* Data arcs — rendered in order, each positioned by cumulative startFraction */}
+                {/* Data arcs */}
                 {(() => {
                   let cumulStart = 0;
                   return slices.map((slice, i) => {
@@ -312,40 +312,40 @@ export function SubjectChart() {
                   dominantBaseline="middle"
                   fill="hsl(var(--foreground))"
                   fontFamily="var(--font-jetbrains-mono)"
-                  fontSize="16"
-                  fontWeight="600"
+                  fontSize="20"
+                  fontWeight="700"
                   textAnchor="middle"
                   x={CENTER}
-                  y={CENTER - 6}
+                  y={CENTER - 8}
                 >
                   {formatDurationCompact(totalSeconds)}
                 </text>
                 <text
                   dominantBaseline="middle"
                   fill="hsl(var(--muted-foreground))"
-                  fontSize="9"
+                  fontSize="11"
                   textAnchor="middle"
                   x={CENTER}
-                  y={CENTER + 10}
+                  y={CENTER + 12}
                 >
                   {periodLabel[period].toUpperCase()}
                 </text>
               </svg>
             </div>
 
-            {/* ── Legend ─────────────────────────────────────────────────── */}
-            <ul className="flex w-full flex-col gap-2.5 sm:max-w-xs">
+            {/* ── Legend — centred below the chart ────────────────────────── */}
+            <ul className="grid w-full max-w-sm gap-3">
               {slices.map((slice) => {
                 const pct = Math.round(slice.fraction * 100);
                 return (
                   <li
-                    className="grid grid-cols-[auto_minmax(0,1fr)_auto_auto] items-center gap-2 text-sm"
+                    className="grid grid-cols-[auto_minmax(0,1fr)_auto_auto] items-center gap-2.5 text-sm"
                     key={slice.name}
                   >
                     {/* Color dot */}
                     <span
                       aria-hidden="true"
-                      className="h-2.5 w-2.5 shrink-0 rounded-full"
+                      className="h-3 w-3 shrink-0 rounded-full"
                       style={{ backgroundColor: slice.color }}
                     />
                     {/* Subject name */}

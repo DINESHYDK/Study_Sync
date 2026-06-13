@@ -6,12 +6,10 @@
  * Mount once, anywhere inside the page. It sets up all scroll-driven
  * animations and cleans up properly on unmount.
  *
- * Design decisions:
- * - useLayoutEffect + gsap.context() → safe cleanup, no SSR side-effects.
- * - ScrollTrigger.batch() for staggered card grids (single RAF loop).
- * - SplitText is not used (requires Club licence); word-splitting is done
- *   manually so we keep zero licensing costs.
- * - Parallax uses the efficient `scrub: true` technique (no JS lerp).
+ * Rules to avoid React conflicts:
+ * - NEVER mutate innerHTML / textContent of React-managed elements.
+ * - All animations use gsap.from() / gsap.to() on live DOM nodes only.
+ * - Cleanup via gsap.context().revert() + ScrollTrigger.getAll().forEach kill.
  */
 
 import gsap from "gsap";
@@ -20,61 +18,32 @@ import { useLayoutEffect } from "react";
 
 gsap.registerPlugin(ScrollTrigger);
 
-// ── Helper: split text content into word-spans for stagger ────────────────────
-
-function splitWords(el: Element): HTMLSpanElement[] {
-  const text = el.textContent ?? "";
-  el.innerHTML = "";
-  return text.split(" ").map((word, i, arr) => {
-    const span = document.createElement("span");
-    span.style.display = "inline-block";
-    span.style.overflow = "hidden";
-    const inner = document.createElement("span");
-    inner.style.display = "inline-block";
-    inner.textContent = word + (i < arr.length - 1 ? "\u00a0" : "");
-    span.appendChild(inner);
-    el.appendChild(span);
-    return inner;
-  });
-}
-
 export function ScrollAnimations() {
   useLayoutEffect(() => {
-    // Wrap everything in a gsap.context so cleanup is automatic.
     const ctx = gsap.context(() => {
-      // ── 1. Hero heading — word stagger reveal ──────────────────────────────
-      const heroH1 = document.querySelector("[data-anim='hero-h1']");
-      if (heroH1) {
-        const words = splitWords(heroH1);
-        gsap.from(words, {
-          y: "110%",
-          opacity: 0,
-          duration: 0.85,
-          ease: "power3.out",
-          stagger: 0.06,
-          scrollTrigger: {
-            trigger: heroH1,
-            start: "top 88%",
-          },
-        });
-      }
+      // ── 1. Hero heading — simple fade+scale (no DOM mutation) ─────────────
+      // We CANNOT split the h1's words because it contains <br> and <span>
+      // children managed by React. Mutating innerHTML would desync the VDOM.
+      gsap.from("[data-anim='hero-h1']", {
+        y: 40,
+        opacity: 0,
+        duration: 0.9,
+        ease: "power3.out",
+      });
 
-      // ── 2. Hero sub-text + CTA buttons — stagger fade-up ──────────────────
+      // ── 2. Hero sub-text + CTA buttons ────────────────────────────────────
       gsap.from("[data-anim='hero-sub']", {
-        y: 28,
+        y: 24,
         opacity: 0,
         duration: 0.7,
         ease: "power2.out",
-        stagger: 0.1,
-        scrollTrigger: {
-          trigger: "[data-anim='hero-sub']",
-          start: "top 90%",
-        },
+        stagger: 0.12,
+        delay: 0.25,
       });
 
       // ── 3. Hero parallax background orb ───────────────────────────────────
       gsap.to("[data-anim='hero-orb']", {
-        y: -80,
+        y: -90,
         ease: "none",
         scrollTrigger: {
           trigger: "[data-anim='hero-orb']",
@@ -90,47 +59,47 @@ export function ScrollAnimations() {
           gsap.from(batch, {
             y: 48,
             opacity: 0,
-            duration: 0.65,
+            duration: 0.6,
             ease: "power2.out",
-            stagger: 0.08,
+            stagger: 0.07,
           });
         },
         start: "top 88%",
         once: true,
       });
 
-      // ── 5. How-It-Works steps — reveal with line progress ─────────────────
+      // ── 5. How-It-Works steps — alternate slide-in ────────────────────────
       const steps = gsap.utils.toArray<Element>("[data-anim='hiw-step']");
       steps.forEach((step, i) => {
         gsap.from(step, {
-          x: i % 2 === 0 ? -40 : 40,
+          x: i % 2 === 0 ? -36 : 36,
           opacity: 0,
-          duration: 0.6,
+          duration: 0.55,
           ease: "power2.out",
           scrollTrigger: {
             trigger: step,
-            start: "top 85%",
+            start: "top 86%",
             once: true,
           },
         });
       });
 
-      // Animate the connector arrows between steps.
+      // Connector arrows — scaleX reveal from left
       gsap.from("[data-anim='hiw-arrow']", {
         scaleX: 0,
         opacity: 0,
         transformOrigin: "left center",
-        duration: 0.5,
+        duration: 0.45,
         ease: "power2.out",
-        stagger: 0.12,
+        stagger: 0.1,
         scrollTrigger: {
           trigger: "[data-anim='hiw-arrow']",
-          start: "top 85%",
+          start: "top 86%",
           once: true,
         },
       });
 
-      // ── 6. FeatureSpotlight sections — text & visual split-in ─────────────
+      // ── 6. FeatureSpotlight — text from left, visual from right ───────────
       const spotlights = gsap.utils.toArray<Element>("[data-anim='spotlight']");
       spotlights.forEach((section) => {
         const text = section.querySelector("[data-anim='spotlight-text']");
@@ -138,13 +107,13 @@ export function ScrollAnimations() {
 
         if (text) {
           gsap.from(text, {
-            x: -56,
+            x: -52,
             opacity: 0,
-            duration: 0.75,
+            duration: 0.7,
             ease: "power3.out",
             scrollTrigger: {
               trigger: section,
-              start: "top 80%",
+              start: "top 82%",
               once: true,
             },
           });
@@ -152,50 +121,49 @@ export function ScrollAnimations() {
 
         if (visual) {
           gsap.from(visual, {
-            x: 56,
+            x: 52,
             opacity: 0,
-            duration: 0.75,
+            duration: 0.7,
             ease: "power3.out",
             scrollTrigger: {
               trigger: section,
-              start: "top 80%",
+              start: "top 82%",
               once: true,
             },
           });
         }
       });
 
-      // ── 7. Final CTA — scale + glow pulse ─────────────────────────────────
+      // ── 7. Final CTA — scale entrance + repeating glow ───────────────────
       const cta = document.querySelector("[data-anim='final-cta']");
       if (cta) {
         gsap.from(cta, {
-          scale: 0.92,
+          scale: 0.93,
           opacity: 0,
-          duration: 0.8,
+          duration: 0.75,
           ease: "power3.out",
           scrollTrigger: {
             trigger: cta,
-            start: "top 82%",
+            start: "top 84%",
             once: true,
           },
-        });
-
-        // Subtle glow pulse after the reveal.
-        gsap.to(cta, {
-          boxShadow: "0 0 80px rgba(45, 212, 191, 0.22)",
-          duration: 1.8,
-          ease: "sine.inOut",
-          yoyo: true,
-          repeat: -1,
-          delay: 1,
+          onComplete: () => {
+            gsap.to(cta, {
+              boxShadow: "0 0 80px rgba(45, 212, 191, 0.2)",
+              duration: 1.8,
+              ease: "sine.inOut",
+              yoyo: true,
+              repeat: -1,
+            });
+          },
         });
       }
 
-      // ── 8. Section headings — slide up ────────────────────────────────────
+      // ── 8. Section headings ────────────────────────────────────────────────
       gsap.from("[data-anim='section-heading']", {
-        y: 36,
+        y: 32,
         opacity: 0,
-        duration: 0.7,
+        duration: 0.65,
         ease: "power2.out",
         stagger: 0.1,
         scrollTrigger: {
@@ -212,6 +180,5 @@ export function ScrollAnimations() {
     };
   }, []);
 
-  // Renders nothing — purely a side-effect component.
   return null;
 }
