@@ -36,57 +36,59 @@ const WEEK_ACTIVE = [true, true, true, true, true, true, false];
 
 function StreakPreview() {
   return (
-    <div className="grid gap-4 p-1">
+    <div className="grid gap-3 sm:gap-4 p-0.5">
       {/* Streak badge row — premium amber card */}
-      <div className="flex items-center gap-4 rounded-2xl border border-amber-500/30 bg-gradient-to-br from-amber-950/30 to-transparent px-5 py-4">
-        {/* Flame with pulsing glow ring */}
-        <div className="relative flex h-14 w-14 shrink-0 items-center justify-center">
-          {/* Outer pulse ring */}
-          <span className="absolute inset-0 animate-pulse rounded-full bg-amber-500/20" />
-          {/* Inner ring */}
-          <span className="absolute inset-1 rounded-full bg-amber-500/10" />
-          <div className="relative flex h-10 w-10 items-center justify-center rounded-full bg-amber-500/20">
-            <Flame className="h-5 w-5 text-amber-400" />
+      <div className="flex items-center justify-between gap-2 rounded-2xl border border-amber-500/30 bg-gradient-to-br from-amber-950/30 to-transparent p-3 sm:p-4">
+        <div className="flex items-center gap-2.5 sm:gap-3.5 min-w-0">
+          {/* Flame with pulsing glow ring */}
+          <div className="relative flex h-10 w-10 sm:h-12 sm:w-12 shrink-0 items-center justify-center">
+            {/* Outer pulse ring */}
+            <span className="absolute inset-0 animate-pulse rounded-full bg-amber-500/20" />
+            {/* Inner ring */}
+            <span className="absolute inset-1 rounded-full bg-amber-500/10" />
+            <div className="relative flex h-7 w-7 sm:h-9 sm:w-9 items-center justify-center rounded-full bg-amber-500/20">
+              <Flame className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-amber-400" />
+            </div>
+          </div>
+
+          <div className="min-w-0">
+            <p className="text-[10px] font-bold uppercase tracking-widest text-amber-400/70">
+              Current streak
+            </p>
+            {/* Big bold streak number with gradient text */}
+            <p
+              className="font-heading text-2xl sm:text-3xl font-black leading-none mt-0.5"
+              style={{
+                background: "linear-gradient(135deg, #fcd34d 0%, #fb923c 100%)",
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+                backgroundClip: "text",
+              }}
+            >
+              7 days
+            </p>
           </div>
         </div>
 
-        <div className="min-w-0">
-          <p className="text-xs font-bold uppercase tracking-widest text-amber-400/70">
-            Current streak
-          </p>
-          {/* Big bold streak number with gradient text */}
-          <p
-            className="font-heading text-4xl font-black leading-none"
-            style={{
-              background: "linear-gradient(135deg, #fcd34d 0%, #fb923c 100%)",
-              WebkitBackgroundClip: "text",
-              WebkitTextFillColor: "transparent",
-              backgroundClip: "text",
-            }}
-          >
-            7 days
-          </p>
-        </div>
-
-        <div className="ml-auto shrink-0">
-          <Badge className="border-amber-500/30 bg-amber-500/10 text-amber-300">
+        <div className="shrink-0">
+          <Badge className="border-amber-500/30 bg-amber-500/10 text-amber-300 text-[10px] sm:text-xs">
             🏆 Top 1%
           </Badge>
         </div>
       </div>
 
       {/* Week heatmap — icon cells with day labels */}
-      <div className="rounded-2xl border border-amber-500/20 bg-[var(--surface)] p-4">
+      <div className="rounded-2xl border border-amber-500/20 bg-[var(--surface)] p-3 sm:p-4">
         <p className="mb-2 text-xs font-semibold text-muted-foreground">
           This week
         </p>
-        <div className="flex flex-col gap-1">
+        <div className="flex flex-col gap-1.5">
           {/* Day labels */}
-          <div className="flex gap-1.5">
+          <div className="grid grid-cols-7 gap-1 sm:gap-1.5 w-full">
             {WEEK_DAYS.map((d, i) => (
               <div
                 key={i}
-                className="flex h-5 w-8 items-center justify-center sm:h-5 sm:w-10"
+                className="flex h-5 w-full min-w-0 items-center justify-center"
               >
                 <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60">
                   {d}
@@ -95,21 +97,21 @@ function StreakPreview() {
             ))}
           </div>
           {/* Icon cells */}
-          <div className="flex gap-1.5">
+          <div className="grid grid-cols-7 gap-1 sm:gap-1.5 w-full">
             {WEEK_ACTIVE.map((active, i) =>
               active ? (
                 <div
                   key={i}
-                  className="flex h-8 w-8 items-center justify-center rounded-xl border border-amber-500/40 bg-amber-500/15 shadow-[0_0_10px_rgba(245,158,11,0.25)] transition-all sm:h-10 sm:w-10"
+                  className="flex aspect-square w-full min-w-0 max-w-[36px] sm:max-w-[40px] items-center justify-center rounded-xl border border-amber-500/40 bg-amber-500/15 shadow-[0_0_10px_rgba(245,158,11,0.25)] transition-all mx-auto"
                 >
-                  <Flame className="h-4 w-4 text-amber-400" />
+                  <Flame className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-amber-400" />
                 </div>
               ) : (
                 <div
                   key={i}
-                  className="flex h-8 w-8 items-center justify-center rounded-xl border border-[var(--border-strong)] bg-[var(--surface-strong)] transition-all sm:h-10 sm:w-10"
+                  className="flex aspect-square w-full min-w-0 max-w-[36px] sm:max-w-[40px] items-center justify-center rounded-xl border border-[var(--border-strong)] bg-[var(--surface-strong)] transition-all mx-auto"
                 >
-                  <Minus className="h-4 w-4 text-muted-foreground/30" />
+                  <Minus className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-muted-foreground/30" />
                 </div>
               ),
             )}
