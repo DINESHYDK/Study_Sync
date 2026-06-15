@@ -4,6 +4,7 @@ import { Inter, JetBrains_Mono, Space_Grotesk } from "next/font/google";
 import "./globals.css";
 
 import { AppProviders } from "@/components/providers/AppProviders";
+import { InstallPrompt } from "@/components/pwa/InstallPrompt";
 import { STUDYSYNC_PUBLIC_URL } from "@/lib/site";
 import { cn } from "@/lib/utils";
 
@@ -80,6 +81,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en" className="dark">
       <body className={cn(inter.variable, spaceGrotesk.variable, jetBrainsMono.variable, "min-h-screen font-body antialiased")}>
         <AppProviders>{children}</AppProviders>
+        <InstallPrompt />
       </body>
     </html>
   );
