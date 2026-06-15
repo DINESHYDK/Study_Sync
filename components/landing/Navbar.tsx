@@ -2,6 +2,9 @@
 
 import { ArrowRight } from "lucide-react";
 import Link from "next/link";
+import { MouseEvent } from "react";
+import gsap from "gsap";
+import { ScrollToPlugin } from "gsap/ScrollToPlugin";
 
 import { Logo } from "@/components/Logo";
 import { landingPalette } from "@/components/landing/palette";
@@ -18,6 +21,22 @@ const navLinks = [
 export function Navbar() {
   const { isConfigured, sessionUser } = useSupabase();
   const isLoggedIn = isConfigured && Boolean(sessionUser);
+
+  if (typeof window !== "undefined") {
+    gsap.registerPlugin(ScrollToPlugin);
+  }
+
+  const handleNavClick = (e: MouseEvent<HTMLAnchorElement>, href: string) => {
+    e.preventDefault();
+    gsap.to(window, {
+      duration: 1,
+      scrollTo: { y: href, offsetY: 64 },
+      ease: "power3.inOut",
+    });
+    if (typeof window !== "undefined") {
+      window.history.pushState(null, "", href);
+    }
+  };
 
   return (
     <header className="sticky top-0 z-50 border-b border-[var(--border-strong)] bg-[#0a0a0f]/80 backdrop-blur-md">
@@ -39,7 +58,7 @@ export function Navbar() {
         <div className="hidden items-center gap-1 md:flex">
           {navLinks.map((link) => (
             <Button asChild key={link.href} size="sm" variant="ghost">
-              <a href={link.href}>{link.label}</a>
+              <a href={link.href} onClick={(e) => handleNavClick(e, link.href)}>{link.label}</a>
             </Button>
           ))}
         </div>
