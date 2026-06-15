@@ -1,6 +1,6 @@
 "use client";
 
-import { ChevronLeft, ChevronRight, Flame, Info, CloudOff, Trophy } from "lucide-react";
+import { ChevronLeft, ChevronRight, Flame, CloudOff, Trophy, Quote } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 
@@ -239,135 +239,151 @@ export function StreakHeatmap() {
     setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1));
   };
 
+  const dailyQuote = useMemo(() => {
+    return MOTIVATIONAL_QUOTES[new Date().getDay() % MOTIVATIONAL_QUOTES.length];
+  }, []);
+
   return (
-    <div className="relative overflow-hidden rounded-3xl border border-[#2a2a35] bg-[#1a1a24] p-6 shadow-2xl">
-      {/* Subtle top glow effect mimicking the design */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-32 h-[2px] bg-teal-500 rounded-full" />
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-64 h-32 bg-teal-500/10 blur-[50px] pointer-events-none" />
+    <div className="flex flex-col gap-6 w-full">
+      {/* Heatmap Card */}
+      <div className="relative overflow-hidden rounded-3xl border border-[#2a2a35] bg-[#1a1a24] p-6 shadow-2xl">
+        {/* Subtle top glow effect mimicking the design */}
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-32 h-[2px] bg-teal-500 rounded-full" />
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-64 h-32 bg-teal-500/10 blur-[50px] pointer-events-none" />
 
-      {isLoading ? <HeatmapSkeleton /> : (
-        <div className="relative z-10 flex flex-col gap-8">
-          
-          {/* Header Row */}
-          <div className="flex items-center justify-between">
-            <button 
-              onClick={() => {
-                const quote = MOTIVATIONAL_QUOTES[new Date().getDay() % MOTIVATIONAL_QUOTES.length];
-                toast.info("Quote of the day", { description: quote });
-              }}
-              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-white/10 bg-white/5 text-white/50 transition-colors hover:bg-white/10 hover:text-white"
-            >
-              <Info className="h-4 w-4" />
-            </button>
+        {isLoading ? <HeatmapSkeleton /> : (
+          <div className="relative z-10 flex flex-col gap-8">
             
-            <div className="flex items-center gap-2 sm:gap-4 flex-1 justify-center mx-2">
-              <button 
-                onClick={handlePrevMonth}
-                className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-white/50 transition-colors hover:bg-white/5 hover:text-white"
-              >
-                <ChevronLeft className="h-5 w-5" />
-              </button>
+            {/* Header Row */}
+            <div className="flex items-center justify-between">
+              <div className="h-10 w-10 shrink-0" /> {/* Spacer to keep header balanced */}
               
-              <div className="flex items-center justify-center rounded-2xl bg-white/5 px-6 py-2 backdrop-blur-sm border border-white/5 whitespace-nowrap">
-                <span className="font-semibold text-white/90">
-                  {MONTH_NAMES[currentDate.getMonth()]} {currentDate.getFullYear()}
-                </span>
-              </div>
-              
-              <button 
-                onClick={handleNextMonth}
-                className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-white/50 transition-colors hover:bg-white/5 hover:text-white"
-              >
-                <ChevronRight className="h-5 w-5" />
-              </button>
-            </div>
-            
-            <div className="h-10 w-10 shrink-0" /> {/* Spacer to keep header balanced */}
-          </div>
-
-          {/* Calendar Grid */}
-          <div className="grid grid-cols-7 gap-y-6">
-            {/* Day Headers */}
-            {DAY_LABELS.map(day => (
-              <div key={day} className="text-center text-sm font-medium text-white/40 mb-2">
-                {day}
-              </div>
-            ))}
-            
-            {/* Day Cells */}
-            {calendarDays.map((day, i) => {
-              const isPast = day.dateStr < today;
-              const hasStudied = activeDates.has(day.dateStr);
-              
-              let content;
-              let isSpecial = false;
-              
-              if (!day.isFuture && !day.isToday && hasStudied) {
-                // Past active day = Flame
-                content = (
-                  <span className="relative flex items-center justify-center drop-shadow-[0_0_8px_rgba(45,212,191,0.8)]">
-                    <Flame className="h-5 w-5 text-teal-400 fill-teal-400/20" />
+              <div className="flex items-center gap-2 sm:gap-4 flex-1 justify-center mx-2">
+                <button 
+                  onClick={handlePrevMonth}
+                  className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-white/50 transition-colors hover:bg-white/5 hover:text-white"
+                >
+                  <ChevronLeft className="h-5 w-5" />
+                </button>
+                
+                <div className="flex items-center justify-center rounded-2xl bg-white/5 px-6 py-2 backdrop-blur-sm border border-white/5 whitespace-nowrap">
+                  <span className="font-semibold text-white/90">
+                    {MONTH_NAMES[currentDate.getMonth()]} {currentDate.getFullYear()}
                   </span>
-                );
-                isSpecial = true;
-              } else if (!day.isFuture && !day.isToday && !hasStudied) {
-                // Past inactive day = CloudOff
-                content = <CloudOff className="h-5 w-5 text-white/20" />;
-                isSpecial = true;
-              } else {
-                // Future or today (or past days if we want simple numbers)
-                content = (
-                  <span className={[
-                    "text-sm font-semibold transition-colors",
-                    day.isCurrentMonth ? "text-white/80" : "text-white/20",
-                    day.isToday ? "text-teal-400 font-bold" : ""
-                  ].join(" ")}>
-                    {day.dayNum}
-                  </span>
-                );
-              }
-
-              // Special case: Today, if studied, show Flame instead of number
-              if (day.isToday && hasStudied) {
-                content = (
-                  <span className="relative flex items-center justify-center drop-shadow-[0_0_8px_rgba(45,212,191,0.8)]">
-                    <Flame className="h-5 w-5 text-teal-400 fill-teal-400/20" />
-                  </span>
-                );
-                isSpecial = true;
-              }
-
-              return (
-                <div key={i} className="flex flex-col items-center justify-center h-10 relative">
-                  {/* Today ring highlight */}
-                  {day.isToday && !isSpecial && (
-                    <div className="absolute inset-0 m-auto h-8 w-8 rounded-full border border-teal-500/50" />
-                  )}
-                  {content}
                 </div>
-              );
-            })}
-          </div>
-
-          {/* Bottom Stats */}
-          <div className="mt-4 flex justify-center">
-            {/* Streak Pill */}
-            <div className="flex w-full sm:w-auto overflow-hidden rounded-full border border-white/10 bg-white/5 backdrop-blur-sm">
-              <div className="flex flex-1 sm:flex-none justify-center items-center gap-2 px-6 py-3 border-r border-white/10">
-                <span className="text-sm font-medium text-white/80">Current</span>
-                <Flame className="h-4 w-4 text-teal-400 fill-teal-400/20" />
-                <span className="text-sm font-bold text-white">{currentStreak}</span>
+                
+                <button 
+                  onClick={handleNextMonth}
+                  className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-white/50 transition-colors hover:bg-white/5 hover:text-white"
+                >
+                  <ChevronRight className="h-5 w-5" />
+                </button>
               </div>
-              <div className="flex flex-1 sm:flex-none justify-center items-center gap-2 px-6 py-3">
-                <span className="text-sm font-medium text-white/80">Max</span>
-                <span className="text-sm font-bold text-teal-400">{'</>'}</span>
-                <span className="text-sm font-bold text-white">{longestStreak}</span>
+              
+              <div className="h-10 w-10 shrink-0" /> {/* Spacer to keep header balanced */}
+            </div>
+
+            {/* Calendar Grid */}
+            <div className="grid grid-cols-7 gap-y-6">
+              {/* Day Headers */}
+              {DAY_LABELS.map(day => (
+                <div key={day} className="text-center text-sm font-medium text-white/40 mb-2">
+                  {day}
+                </div>
+              ))}
+              
+              {/* Day Cells */}
+              {calendarDays.map((day, i) => {
+                const isPast = day.dateStr < today;
+                const hasStudied = activeDates.has(day.dateStr);
+                
+                let content;
+                let isSpecial = false;
+                
+                if (!day.isFuture && !day.isToday && hasStudied) {
+                  // Past active day = Flame
+                  content = (
+                    <span className="relative flex items-center justify-center drop-shadow-[0_0_8px_rgba(45,212,191,0.8)]">
+                      <Flame className="h-5 w-5 text-teal-400 fill-teal-400/20" />
+                    </span>
+                  );
+                  isSpecial = true;
+                } else if (!day.isFuture && !day.isToday && !hasStudied) {
+                  // Past inactive day = CloudOff
+                  content = <CloudOff className="h-5 w-5 text-white/20" />;
+                  isSpecial = true;
+                } else {
+                  // Future or today (or past days if we want simple numbers)
+                  content = (
+                    <span className={[
+                      "text-sm font-semibold transition-colors",
+                      day.isCurrentMonth ? "text-white/80" : "text-white/20",
+                      day.isToday ? "text-teal-400 font-bold" : ""
+                    ].join(" ")}>
+                      {day.dayNum}
+                    </span>
+                  );
+                }
+
+                // Special case: Today, if studied, show Flame instead of number
+                if (day.isToday && hasStudied) {
+                  content = (
+                    <span className="relative flex items-center justify-center drop-shadow-[0_0_8px_rgba(45,212,191,0.8)]">
+                      <Flame className="h-5 w-5 text-teal-400 fill-teal-400/20" />
+                    </span>
+                  );
+                  isSpecial = true;
+                }
+
+                return (
+                  <div key={i} className="flex flex-col items-center justify-center h-10 relative">
+                    {/* Today ring highlight */}
+                    {day.isToday && !isSpecial && (
+                      <div className="absolute inset-0 m-auto h-8 w-8 rounded-full border border-teal-500/50" />
+                    )}
+                    {content}
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Bottom Stats */}
+            <div className="mt-4 flex justify-center">
+              {/* Streak Pill */}
+              <div className="flex w-full sm:w-auto overflow-hidden rounded-full border border-white/10 bg-white/5 backdrop-blur-sm">
+                <div className="flex flex-1 sm:flex-none justify-center items-center gap-2 px-6 py-3 border-r border-white/10">
+                  <span className="text-sm font-medium text-white/80">Current</span>
+                  <Flame className="h-4 w-4 text-teal-400 fill-teal-400/20" />
+                  <span className="text-sm font-bold text-white">{currentStreak}</span>
+                </div>
+                <div className="flex flex-1 sm:flex-none justify-center items-center gap-2 px-6 py-3">
+                  <span className="text-sm font-medium text-white/80">Max</span>
+                  <span className="text-sm font-bold text-teal-400">{'</>'}</span>
+                  <span className="text-sm font-bold text-white">{longestStreak}</span>
+                </div>
               </div>
             </div>
-          </div>
 
+          </div>
+        )}
+      </div>
+
+      {/* Quote of the Day Card */}
+      <div className="relative overflow-hidden rounded-3xl border border-[#2a2a35] bg-[#1a1a24] p-6 shadow-2xl">
+        {/* Subtle top glow effect mimicking the design */}
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-32 h-[2px] bg-teal-500 rounded-full" />
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-64 h-32 bg-teal-500/10 blur-[50px] pointer-events-none" />
+
+        <div className="relative z-10 flex flex-col gap-3">
+          <div className="flex items-center gap-2 text-teal-400">
+            <Quote className="h-4 w-4 fill-teal-400/20 rotate-180" />
+            <span className="text-xs font-bold uppercase tracking-wider text-teal-400/80">Quote of the Day</span>
+          </div>
+          <p className="text-sm font-medium text-white/95 italic leading-relaxed pl-1">
+            "{dailyQuote}"
+          </p>
         </div>
-      )}
+      </div>
     </div>
   );
 }
