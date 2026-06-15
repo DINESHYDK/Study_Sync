@@ -11,6 +11,7 @@ import { TodoList } from "@/components/todos/TodoList";
 import { Card, CardContent } from "@/components/ui/card";
 import { DashboardSkeleton } from "@/components/ui/skeletons";
 import { StreakBadge } from "@/components/stats/StreakBadge";
+import { StreakHeatmap } from "@/components/stats/StreakHeatmap";
 import { SubjectChart } from "@/components/stats/SubjectChart";
 import { useFriendStore } from "@/stores/useFriendStore";
 import { useTimerStore } from "@/stores/useTimerStore";
@@ -44,7 +45,8 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="flex flex-col gap-6 min-w-0 w-full">
+    <div className="xl:grid xl:grid-cols-[minmax(0,1fr)_340px] xl:gap-8 flex flex-col gap-6 min-w-0 w-full items-start">
+      <div className="flex flex-col gap-6 min-w-0 w-full">
       <header className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <p className="text-sm text-muted-foreground">{format(new Date(), "EEEE, MMMM d")}</p>
@@ -93,6 +95,17 @@ export default function DashboardPage() {
           </div>
         )}
       </section>
+      </div>
+
+      {/* Right Sidebar (Desktop) */}
+      <aside className="hidden xl:flex flex-col gap-6 w-full sticky top-6">
+        <StreakHeatmap />
+      </aside>
+
+      {/* Heatmap on Mobile/Tablet */}
+      <div className="xl:hidden w-full">
+        <StreakHeatmap />
+      </div>
     </div>
   );
 }
