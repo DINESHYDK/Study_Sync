@@ -22,8 +22,8 @@ import { cn } from "@/lib/utils";
 import { useUserStore } from "@/stores/useUserStore";
 
 const navItems = [
-  { href: "/dashboard", label: "Dashboard", icon: Clock3 },
-  { href: "/history", label: "History", icon: BookOpenCheck },
+  { href: "/dashboard", label: "Dashboard", icon: BookOpenCheck },
+  { href: "/history", label: "History", icon: Clock3 },
   { href: "/friends", label: "Friends", icon: Users },
   { href: "/settings", label: "Settings", icon: Settings },
 ] as const;

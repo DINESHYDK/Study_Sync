@@ -1,6 +1,8 @@
 "use client";
 
 import { BookOpenCheck, CheckSquare, Clock3, Hash } from "lucide-react";
+
+import { StreakHeatmap } from "@/components/stats/StreakHeatmap";
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 
@@ -109,11 +111,14 @@ export default function HistoryPage() {
 
   return (
     <div className="flex flex-col gap-6 min-w-0 w-full">
+      {/* ── Streak Heatmap ──────────────────────────────────────────────────── */}
+      <StreakHeatmap />
+
       {/* ── Header ─────────────────────────────────────────────────────────── */}
       <header className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <div className="flex items-center gap-2.5 mb-0.5">
-            <BookOpenCheck className="h-6 w-6 text-[#6c63ff]" />
+            <Clock3 className="h-6 w-6 text-[#6c63ff]" />
             <h1 className="font-heading text-3xl font-semibold tracking-normal">Study History</h1>
           </div>
           <p className="mt-1 text-sm text-muted-foreground">

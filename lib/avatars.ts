@@ -5,18 +5,18 @@ export type AvatarOption = {
 };
 
 export const AVATARS = [
-  { id: "micah-felix", url: "https://api.dicebear.com/9.x/micah/svg?seed=Felix&backgroundColor=transparent", label: "Felix" },
-  { id: "avataaars-aiden", url: "https://api.dicebear.com/9.x/avataaars/svg?seed=Aiden&backgroundColor=transparent", label: "Aiden" },
-  { id: "notionists-jude", url: "https://api.dicebear.com/9.x/notionists/svg?seed=Jude&backgroundColor=transparent", label: "Jude" },
-  { id: "miniavs-amaya", url: "https://api.dicebear.com/9.x/miniavs/svg?seed=Amaya&backgroundColor=transparent", label: "Amaya" },
-  { id: "micah-oliver", url: "https://api.dicebear.com/9.x/micah/svg?seed=Oliver&backgroundColor=transparent", label: "Oliver" },
-  { id: "avataaars-sophia", url: "https://api.dicebear.com/9.x/avataaars/svg?seed=Sophia&backgroundColor=transparent", label: "Sophia" },
-  { id: "notionists-liam", url: "https://api.dicebear.com/9.x/notionists/svg?seed=Liam&backgroundColor=transparent", label: "Liam" },
-  { id: "miniavs-emma", url: "https://api.dicebear.com/9.x/miniavs/svg?seed=Emma&backgroundColor=transparent", label: "Emma" },
-  { id: "micah-noah", url: "https://api.dicebear.com/9.x/micah/svg?seed=Noah&backgroundColor=transparent", label: "Noah" },
-  { id: "avataaars-bella", url: "https://api.dicebear.com/9.x/avataaars/svg?seed=Isabella&backgroundColor=transparent", label: "Bella" },
-  { id: "notionists-james", url: "https://api.dicebear.com/9.x/notionists/svg?seed=James&backgroundColor=transparent", label: "James" },
-  { id: "miniavs-mia", url: "https://api.dicebear.com/9.x/miniavs/svg?seed=Mia&backgroundColor=transparent", label: "Mia" },
+  { id: "micah-felix", url: "https://api.dicebear.com/9.x/micah/svg?seed=Felix&backgroundColor=transparent", label: "Chintu" },
+  { id: "avataaars-aiden", url: "https://api.dicebear.com/9.x/avataaars/svg?seed=Aiden&backgroundColor=transparent", label: "Pappu" },
+  { id: "notionists-jude", url: "https://api.dicebear.com/9.x/notionists/svg?seed=Jude&backgroundColor=transparent", label: "Bujji" },
+  { id: "miniavs-amaya", url: "https://api.dicebear.com/9.x/miniavs/svg?seed=Amaya&backgroundColor=transparent", label: "Ammu" },
+  { id: "micah-oliver", url: "https://api.dicebear.com/9.x/micah/svg?seed=Oliver&backgroundColor=transparent", label: "Kanna" },
+  { id: "avataaars-sophia", url: "https://api.dicebear.com/9.x/avataaars/svg?seed=Sophia&backgroundColor=transparent", label: "Chitti" },
+  { id: "notionists-liam", url: "https://api.dicebear.com/9.x/notionists/svg?seed=Liam&backgroundColor=transparent", label: "Raju" },
+  { id: "miniavs-emma", url: "https://api.dicebear.com/9.x/miniavs/svg?seed=Emma&backgroundColor=transparent", label: "Guddu" },
+  { id: "micah-noah", url: "https://api.dicebear.com/9.x/micah/svg?seed=Noah&backgroundColor=transparent", label: "Munna" },
+  { id: "avataaars-bella", url: "https://api.dicebear.com/9.x/avataaars/svg?seed=Isabella&backgroundColor=transparent", label: "Pinky" },
+  { id: "notionists-james", url: "https://api.dicebear.com/9.x/notionists/svg?seed=James&backgroundColor=transparent", label: "Sonu" },
+  { id: "miniavs-mia", url: "https://api.dicebear.com/9.x/miniavs/svg?seed=Mia&backgroundColor=transparent", label: "Chinnu" },
 ] as const satisfies readonly AvatarOption[];
 
 export const AVATAR_ACCENTS = [

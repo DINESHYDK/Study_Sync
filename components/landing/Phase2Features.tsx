@@ -13,9 +13,11 @@ import {
   CheckSquare,
   ChevronRight,
   Clock3,
+  CloudOff,
   Flame,
   Link2,
   MessageSquare,
+  Minus,
   Music2,
   Send,
   Volume2,
@@ -29,37 +31,89 @@ import { cn } from "@/lib/utils";
 
 // ── Mini preview components ────────────────────────────────────────────────────
 
+const WEEK_DAYS = ["M", "T", "W", "T", "F", "S", "S"];
+const WEEK_ACTIVE = [true, true, true, true, true, true, false];
+
 function StreakPreview() {
   return (
-    <div className="grid gap-4">
-      {/* Streak badge row */}
-      <div className="flex items-center gap-3 rounded-2xl border border-amber-500/20 bg-amber-500/8 px-5 py-4">
-        <div className="flex h-12 w-12 items-center justify-center rounded-full bg-amber-500/15 text-2xl">
-          🔥
+    <div className="grid gap-4 p-1">
+      {/* Streak badge row — premium amber card */}
+      <div className="flex items-center gap-4 rounded-2xl border border-amber-500/30 bg-gradient-to-br from-amber-950/30 to-transparent px-5 py-4">
+        {/* Flame with pulsing glow ring */}
+        <div className="relative flex h-14 w-14 shrink-0 items-center justify-center">
+          {/* Outer pulse ring */}
+          <span className="absolute inset-0 animate-pulse rounded-full bg-amber-500/20" />
+          {/* Inner ring */}
+          <span className="absolute inset-1 rounded-full bg-amber-500/10" />
+          <div className="relative flex h-10 w-10 items-center justify-center rounded-full bg-amber-500/20">
+            <Flame className="h-5 w-5 text-amber-400" />
+          </div>
         </div>
+
         <div className="min-w-0">
-          <p className="text-xs font-bold uppercase tracking-widest text-amber-400/70">Current streak</p>
-          <p className="font-heading text-3xl font-bold text-amber-300">7 days</p>
+          <p className="text-xs font-bold uppercase tracking-widest text-amber-400/70">
+            Current streak
+          </p>
+          {/* Big bold streak number with gradient text */}
+          <p
+            className="font-heading text-4xl font-black leading-none"
+            style={{
+              background: "linear-gradient(135deg, #fcd34d 0%, #fb923c 100%)",
+              WebkitBackgroundClip: "text",
+              WebkitTextFillColor: "transparent",
+              backgroundClip: "text",
+            }}
+          >
+            7 days
+          </p>
         </div>
+
         <div className="ml-auto shrink-0">
-          <Badge className="border-amber-500/30 bg-amber-500/10 text-amber-300">🏆 Top 1%</Badge>
+          <Badge className="border-amber-500/30 bg-amber-500/10 text-amber-300">
+            🏆 Top 1%
+          </Badge>
         </div>
       </div>
-      {/* Weekly heat-map dots */}
-      <div className="flex items-center justify-between rounded-2xl border border-[var(--border-strong)] bg-[var(--surface)] p-4">
-        <p className="text-xs font-semibold text-muted-foreground">This week</p>
-        <div className="flex gap-1.5">
-          {[true, true, true, true, true, true, false].map((active, i) => (
-            <div
-              className={cn(
-                "h-7 w-7 rounded-lg transition-all",
-                active
-                  ? "bg-[#6c63ff] shadow-[0_0_12px_rgba(108,99,255,0.4)]"
-                  : "bg-[var(--surface-strong)]",
-              )}
-              key={i}
-            />
-          ))}
+
+      {/* Week heatmap — icon cells with day labels */}
+      <div className="rounded-2xl border border-amber-500/20 bg-[var(--surface)] p-4">
+        <p className="mb-2 text-xs font-semibold text-muted-foreground">
+          This week
+        </p>
+        <div className="flex flex-col gap-1">
+          {/* Day labels */}
+          <div className="flex gap-1.5">
+            {WEEK_DAYS.map((d, i) => (
+              <div
+                key={i}
+                className="flex h-5 w-8 items-center justify-center sm:h-5 sm:w-10"
+              >
+                <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60">
+                  {d}
+                </span>
+              </div>
+            ))}
+          </div>
+          {/* Icon cells */}
+          <div className="flex gap-1.5">
+            {WEEK_ACTIVE.map((active, i) =>
+              active ? (
+                <div
+                  key={i}
+                  className="flex h-8 w-8 items-center justify-center rounded-xl border border-amber-500/40 bg-amber-500/15 shadow-[0_0_10px_rgba(245,158,11,0.25)] transition-all sm:h-10 sm:w-10"
+                >
+                  <Flame className="h-4 w-4 text-amber-400" />
+                </div>
+              ) : (
+                <div
+                  key={i}
+                  className="flex h-8 w-8 items-center justify-center rounded-xl border border-[var(--border-strong)] bg-[var(--surface-strong)] transition-all sm:h-10 sm:w-10"
+                >
+                  <Minus className="h-4 w-4 text-muted-foreground/30" />
+                </div>
+              ),
+            )}
+          </div>
         </div>
       </div>
     </div>
@@ -194,6 +248,98 @@ function CommentsPreview() {
   );
 }
 
+// ── Mini SVG donut chart for History wide card ─────────────────────────────────
+
+function MiniDonutChart() {
+  // Represents: Codeforces 62%, CF Tree 28%, General 10%
+  const segments = [
+    { color: "#6c63ff", pct: 62, label: "Codeforces" },
+    { color: "#10b981", pct: 28, label: "CF 1500 Tree" },
+    { color: "#f59e0b", pct: 10, label: "General" },
+  ];
+
+  const r = 44;
+  const cx = 60;
+  const cy = 60;
+  const circ = 2 * Math.PI * r;
+
+  let offset = 0;
+  const arcs = segments.map((s) => {
+    const dashLen = (s.pct / 100) * circ;
+    const arc = { ...s, dashLen, dashOffset: -offset };
+    offset += dashLen;
+    return arc;
+  });
+
+  return (
+    <div className="flex flex-col items-center gap-4">
+      <div className="relative flex items-center justify-center">
+        <svg width="120" height="120" viewBox="0 0 120 120" className="drop-shadow-lg">
+          {/* Track */}
+          <circle
+            cx={cx}
+            cy={cy}
+            r={r}
+            fill="none"
+            stroke="rgba(255,255,255,0.05)"
+            strokeWidth="14"
+          />
+          {/* Colored arcs */}
+          {arcs.map((arc) => (
+            <circle
+              key={arc.label}
+              cx={cx}
+              cy={cy}
+              r={r}
+              fill="none"
+              stroke={arc.color}
+              strokeWidth="14"
+              strokeDasharray={`${arc.dashLen} ${circ - arc.dashLen}`}
+              strokeDashoffset={arc.dashOffset}
+              strokeLinecap="butt"
+              style={{ transform: "rotate(-90deg)", transformOrigin: "60px 60px" }}
+            />
+          ))}
+          {/* Centre label */}
+          <text
+            x={cx}
+            y={cy - 6}
+            textAnchor="middle"
+            className="fill-white"
+            style={{ fontSize: 13, fontWeight: 700, fill: "white" }}
+          >
+            2h 36m
+          </text>
+          <text
+            x={cx}
+            y={cy + 10}
+            textAnchor="middle"
+            style={{ fontSize: 9, fill: "rgba(255,255,255,0.45)" }}
+          >
+            total
+          </text>
+        </svg>
+      </div>
+
+      {/* Legend */}
+      <div className="grid w-full gap-1.5">
+        {segments.map((s) => (
+          <div key={s.label} className="flex items-center gap-2">
+            <span
+              className="h-2 w-2 shrink-0 rounded-full"
+              style={{ backgroundColor: s.color }}
+            />
+            <span className="flex-1 text-xs text-muted-foreground">{s.label}</span>
+            <span className="font-mono text-xs font-semibold" style={{ color: s.color }}>
+              {s.pct}%
+            </span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 function HistoryPreview() {
   const segments = [
     { subject: "Codeforces", time: "5:42 – 7:18 AM", dur: "1h 36m", color: "#6c63ff" },
@@ -202,7 +348,7 @@ function HistoryPreview() {
   ];
 
   return (
-    <div className="grid gap-3">
+    <div className="grid gap-4">
       <div className="flex items-center gap-2 text-sm font-semibold">
         <BookOpenCheck className="h-4 w-4 text-[#2dd4bf]" />
         Study History
@@ -210,42 +356,67 @@ function HistoryPreview() {
           Jun 13
         </span>
       </div>
-      {/* Mini donut indicator */}
-      <div className="flex items-center gap-3 rounded-xl border border-[var(--border-strong)] bg-[var(--surface)] px-3 py-2.5">
-        <div className="flex gap-1">
-          {segments.map((s) => (
-            <div
-              className="h-2.5 rounded-full"
-              key={s.subject}
-              style={{ backgroundColor: s.color, width: `${parseInt(s.dur) > 60 ? 60 : parseInt(s.dur)}px` }}
-            />
-          ))}
-        </div>
-        <span className="ml-auto font-mono text-sm font-semibold">2h 36m</span>
-      </div>
-      {/* Segment rows */}
-      <ul className="grid gap-1.5">
-        {segments.map((s) => (
-          <li
-            className="grid grid-cols-[auto_1fr_auto] items-center gap-3 rounded-xl border border-[var(--border-strong)] bg-[var(--surface)] px-3 py-2"
-            key={s.subject}
-          >
-            <span className="h-2 w-2 rounded-full" style={{ backgroundColor: s.color }} />
-            <div className="min-w-0">
-              <p className="truncate text-sm font-medium">{s.subject}</p>
-              <p className="text-[10px] text-muted-foreground">{s.time}</p>
+
+      {/* Two-column layout on desktop */}
+      <div className="grid gap-4 md:grid-cols-2">
+        {/* Left: Segment list */}
+        <div className="grid gap-2">
+          {/* Mini bar chart */}
+          <div className="flex items-center gap-2 rounded-xl border border-[var(--border-strong)] bg-[var(--surface)] px-3 py-2.5">
+            <div className="flex flex-1 gap-1 overflow-hidden rounded-full">
+              {segments.map((s) => (
+                <div
+                  key={s.subject}
+                  className="h-2 rounded-full transition-all"
+                  style={{
+                    backgroundColor: s.color,
+                    flex: parseInt(s.dur) > 60 ? 3 : parseInt(s.dur) > 30 ? 2 : 1,
+                  }}
+                />
+              ))}
             </div>
-            <span className="font-mono text-xs text-muted-foreground">{s.dur}</span>
-          </li>
-        ))}
-      </ul>
+            <span className="ml-2 shrink-0 font-mono text-sm font-semibold">2h 36m</span>
+          </div>
+
+          {/* Segment rows */}
+          <ul className="grid gap-1.5">
+            {segments.map((s) => (
+              <li
+                className="grid grid-cols-[auto_1fr_auto] items-center gap-3 rounded-xl border border-[var(--border-strong)] bg-[var(--surface)] px-3 py-2"
+                key={s.subject}
+              >
+                <span className="h-2 w-2 rounded-full" style={{ backgroundColor: s.color }} />
+                <div className="min-w-0">
+                  <p className="truncate text-sm font-medium">{s.subject}</p>
+                  <p className="text-[10px] text-muted-foreground">{s.time}</p>
+                </div>
+                <span className="font-mono text-xs text-muted-foreground">{s.dur}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        {/* Right: Donut chart visual */}
+        <div className="flex items-center justify-center rounded-xl border border-[var(--border-strong)] bg-[var(--surface)] p-4">
+          <MiniDonutChart />
+        </div>
+      </div>
     </div>
   );
 }
 
 // ── Feature card definition ────────────────────────────────────────────────────
 
-const features = [
+const features: {
+  label: string;
+  title: string;
+  body: string;
+  points: readonly string[];
+  icon: React.ElementType;
+  preview: React.ReactNode;
+  accent: keyof typeof accentMap;
+  wideCard?: boolean;
+}[] = [
   {
     label: "Gamification",
     title: "Streaks that keep you honest.",
@@ -315,8 +486,9 @@ const features = [
     icon: BookOpenCheck,
     preview: <HistoryPreview />,
     accent: "teal",
+    wideCard: true,
   },
-] as const;
+];
 
 const accentMap = {
   amber: "border-amber-500/20 bg-amber-500/6 text-amber-400",
@@ -345,14 +517,18 @@ export function Phase2Features() {
           </p>
         </FadeIn>
 
-        {/* Feature cards */}
+        {/* Feature cards — 2-col lg, 3-col xl; History spans 2 on lg+ */}
         <div className="grid gap-8 lg:grid-cols-2 xl:grid-cols-3">
           {features.map((feat, i) => {
             const Icon = feat.icon;
             const accentCls = accentMap[feat.accent];
 
             return (
-              <FadeIn delay={i * 0.06} key={feat.label}>
+              <FadeIn
+                delay={i * 0.06}
+                key={feat.label}
+                className={cn(feat.wideCard && "lg:col-span-2")}
+              >
                 <Card
                   className="group flex h-full flex-col overflow-hidden border-[var(--border-strong)] bg-[var(--surface-strong)] transition-all duration-300 hover:border-[var(--border-strong)]/80 hover:shadow-[0_0_40px_rgba(108,99,255,0.08)]"
                 >
