@@ -50,8 +50,8 @@ export function ComparisonPreview() {
         <div className="text-center font-heading text-sm font-bold text-[var(--text-muted)]">VS</div>
         <StatCard initials="E" name="Eswar" tasks="5 tasks ✓" time="3h 41m" width="58%" />
       </div>
-      <div className="mt-6 flex items-center justify-center gap-2 rounded-2xl border border-amber-400/30 bg-amber-400/10 p-4 text-center font-heading text-lg font-semibold text-amber-100">
-        <Trophy className="h-5 w-5 text-amber-400 shrink-0" />
+      <div className="mt-6 flex items-center justify-center gap-2 rounded-2xl border border-teal-500/30 bg-teal-500/10 p-4 text-center font-heading text-lg font-semibold text-teal-100">
+        <Trophy className="h-5 w-5 text-teal-400 shrink-0" />
         Dinesh wins by 1h 42m today!
       </div>
     </Card>
