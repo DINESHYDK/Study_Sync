@@ -2,6 +2,7 @@
 
 import { ChevronLeft, ChevronRight, Flame, Info, Share, Trophy } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { toast } from "sonner";
 
 import { useSupabase } from "@/components/providers/SupabaseProvider";
 import { todayLocalDate } from "@/lib/utils";
@@ -14,6 +15,13 @@ const MONTH_NAMES = [
   "July", "August", "September", "October", "November", "December"
 ];
 const DAY_LABELS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+
+const MOTIVATIONAL_QUOTES = [
+  "The expert in anything was once a beginner.",
+  "Discipline is choosing between what you want now and what you want most.",
+  "Small daily improvements are the key to staggering long-term results.",
+  "Success is the sum of small efforts repeated day in and day out.",
+];
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
@@ -242,7 +250,13 @@ export function StreakHeatmap() {
           
           {/* Header Row */}
           <div className="flex items-center justify-between">
-            <button className="flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-white/5 text-white/50 transition-colors hover:bg-white/10 hover:text-white">
+            <button 
+              onClick={() => {
+                const quote = MOTIVATIONAL_QUOTES[new Date().getDay() % MOTIVATIONAL_QUOTES.length];
+                toast.info("Quote of the day", { description: quote });
+              }}
+              className="flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-white/5 text-white/50 transition-colors hover:bg-white/10 hover:text-white"
+            >
               <Info className="h-4 w-4" />
             </button>
             
@@ -256,7 +270,7 @@ export function StreakHeatmap() {
               
               <div className="flex items-center justify-center rounded-2xl bg-white/5 px-4 py-1.5 backdrop-blur-sm border border-white/5">
                 <span className="font-semibold text-white/90">
-                  {MONTH_NAMES[currentDate.getMonth()]} {currentDate.getFullYear() !== todayDateObj.getFullYear() ? currentDate.getFullYear() : ""}
+                  {MONTH_NAMES[currentDate.getMonth()]} {currentDate.getFullYear()}
                 </span>
               </div>
               
@@ -268,7 +282,13 @@ export function StreakHeatmap() {
               </button>
             </div>
             
-            <button className="flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-white/5 text-white/50 transition-colors hover:bg-white/10 hover:text-white">
+            <button 
+              onClick={() => {
+                navigator.clipboard.writeText(`I'm on a ${currentStreak}-day study streak on StudySync! 🔥`);
+                toast.success("Streak copied to clipboard!");
+              }}
+              className="flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-white/5 text-white/50 transition-colors hover:bg-white/10 hover:text-white"
+            >
               <Share className="h-4 w-4" />
             </button>
           </div>
@@ -337,72 +357,20 @@ export function StreakHeatmap() {
             })}
           </div>
 
-          {/* Bottom Stats & Ranks row */}
-          <div className="mt-4 flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
-            
+          {/* Bottom Stats */}
+          <div className="mt-4 flex justify-center">
             {/* Streak Pill */}
-            <div className="flex mx-auto sm:mx-0 overflow-hidden rounded-full border border-white/10 bg-white/5 backdrop-blur-sm">
-              <div className="flex items-center gap-2 px-4 py-2 border-r border-white/10">
+            <div className="flex w-full sm:w-auto overflow-hidden rounded-full border border-white/10 bg-white/5 backdrop-blur-sm">
+              <div className="flex flex-1 sm:flex-none justify-center items-center gap-2 px-6 py-3 border-r border-white/10">
                 <span className="text-sm font-medium text-white/80">Current</span>
                 <span className="text-sm">🔥</span>
                 <span className="text-sm font-bold text-white">{currentStreak}</span>
               </div>
-              <div className="flex items-center gap-2 px-4 py-2">
+              <div className="flex flex-1 sm:flex-none justify-center items-center gap-2 px-6 py-3">
                 <span className="text-sm font-medium text-white/80">Max</span>
                 <span className="text-sm text-orange-400">{'</>'}</span>
                 <span className="text-sm font-bold text-white">{longestStreak}</span>
               </div>
-            </div>
-            
-            {/* Leaderboard Button */}
-            <button className="flex mx-auto sm:mx-0 items-center gap-2 rounded-full border border-white/10 bg-transparent px-6 py-2 transition-colors hover:bg-white/5">
-              <Trophy className="h-4 w-4 text-white/40" />
-              <span className="text-sm font-medium text-white/40">Leaderboard</span>
-            </button>
-          </div>
-          
-          {/* Rank Section (Visual only to match design) */}
-          <div className="mt-4 flex items-center justify-between border-t border-white/10 pt-8 px-2 overflow-x-auto gap-4">
-            <div className="flex flex-col items-center gap-3 min-w-[80px]">
-              <div className="relative flex h-14 w-14 items-center justify-center rounded-full bg-yellow-400 ring-4 ring-yellow-400/20 shadow-[0_0_15px_rgba(250,204,21,0.5)]">
-                <div className="absolute -bottom-2 -left-1 text-2xl">🎗️</div>
-                <div className="h-10 w-10 rounded-full bg-blue-500 overflow-hidden">
-                  <img src={profile?.avatar_url || `https://api.dicebear.com/9.x/micah/svg?seed=user1&backgroundColor=transparent`} alt="rank 1" className="h-full w-full object-cover" />
-                </div>
-              </div>
-              <span className="text-xs font-bold text-white">Rank 1</span>
-            </div>
-            
-            <div className="flex flex-col items-center gap-3 min-w-[80px]">
-              <div className="relative flex h-14 w-14 items-center justify-center rounded-full bg-gray-400 ring-4 ring-gray-400/20">
-                 <div className="absolute -bottom-2 -left-1 text-2xl grayscale">🎗️</div>
-                <div className="h-10 w-10 rounded-full bg-gray-700 flex items-center justify-center">
-                  <div className="h-4 w-4 rounded-full border-2 border-white/50" />
-                </div>
-              </div>
-              <span className="text-xs font-bold text-white">Rank 2</span>
-            </div>
-            
-            <div className="flex flex-col items-center gap-3 min-w-[80px]">
-              <div className="relative flex h-14 w-14 items-center justify-center rounded-full bg-orange-400 ring-4 ring-orange-400/20">
-                 <div className="absolute -bottom-2 -left-1 text-2xl hue-rotate-15">🎗️</div>
-                <div className="h-10 w-10 rounded-full bg-orange-900 flex items-center justify-center">
-                   <div className="h-4 w-4 rounded-full border-2 border-white/50" />
-                </div>
-              </div>
-              <span className="text-xs font-bold text-white">Rank 3</span>
-            </div>
-            
-            <div className="h-12 w-[1px] bg-white/10 mx-2 hidden sm:block" />
-            
-            <div className="flex flex-col items-center gap-3 min-w-[80px]">
-              <div className="relative flex h-12 w-12 items-center justify-center rounded-full bg-[#3d2c23] ring-4 ring-[#3d2c23]/50">
-                 <div className="absolute -bottom-2 -left-1 text-2xl opacity-50 sepia">🎗️</div>
-                <div className="h-8 w-8 rounded-full bg-black/40 flex items-center justify-center">
-                   <div className="h-3 w-3 rounded-full border-2 border-white/30" />
-                </div>
-              </div>
-              <span className="text-xs font-bold text-white">Rank 8641</span>
             </div>
           </div>
 
