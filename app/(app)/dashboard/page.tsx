@@ -76,7 +76,7 @@ export default function DashboardPage() {
           <h2 className="font-heading text-xl font-semibold">Friends Activity</h2>
         </div>
         {isLoadingFriends ? (
-          <div className="flex gap-4 overflow-x-auto pb-2 animate-pulse">
+          <div className="flex gap-4 overflow-x-auto pt-2 pb-4 px-1 -mx-1 animate-pulse">
             <div className="w-80 h-32 bg-secondary/50 rounded-2xl border border-border shrink-0" />
             <div className="w-80 h-32 bg-secondary/50 rounded-2xl border border-border shrink-0" />
             <div className="w-80 h-32 bg-secondary/50 rounded-2xl border border-border shrink-0" />
@@ -86,7 +86,7 @@ export default function DashboardPage() {
             No friend activity yet. Add friends from Settings to see live progress here.
           </div>
         ) : (
-          <div className="flex gap-4 overflow-x-auto pb-2 scrollbar-subtle">
+          <div className="flex gap-4 overflow-x-auto pt-2 pb-4 px-1 -mx-1 scrollbar-subtle">
             {friends.map((friend) => (
               <div className="w-80 shrink-0" key={friend.profile.id}>
                 <FriendCard friend={friend} />
