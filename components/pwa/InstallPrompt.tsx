@@ -20,8 +20,13 @@ export function InstallPrompt() {
     const isDismissed = localStorage.getItem("pwa-prompt-dismissed");
     if (isDismissed) return;
 
-    // Detect iOS
     const userAgent = window.navigator.userAgent.toLowerCase();
+
+    // Only show on mobile/tablet devices
+    const isMobileOrTablet = /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/.test(userAgent);
+    if (!isMobileOrTablet) return;
+
+    // Detect iOS
     const isIOSDevice = /iphone|ipad|ipod/.test(userAgent);
     setIsIOS(isIOSDevice);
 
@@ -80,7 +85,7 @@ export function InstallPrompt() {
   if (!showPrompt || isStandalone) return null;
 
   return (
-    <div className="fixed bottom-4 left-4 right-4 md:left-auto md:right-8 md:w-96 z-50 animate-in slide-in-from-bottom-8 fade-in duration-500">
+    <div className="fixed bottom-4 left-4 right-4 md:left-auto md:right-8 md:w-96 z-50 animate-in slide-in-from-bottom-8 fade-in duration-500 lg:hidden">
       <div className="rounded-2xl border border-teal-500/20 bg-[#1a1a24]/95 backdrop-blur-xl p-4 shadow-2xl flex flex-col gap-3">
         <div className="flex items-start justify-between">
           <div className="flex items-center gap-3">
