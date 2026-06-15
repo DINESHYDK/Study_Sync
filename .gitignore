@@ -10,3 +10,10 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 .DS_Store
+
+# PWA — auto-generated service worker files
+public/sw.js
+public/sw.js.map
+public/swe-worker-*.js
+public/workbox-*.js
+public/workbox-*.js.map
