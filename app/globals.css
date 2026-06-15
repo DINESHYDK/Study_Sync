@@ -87,3 +87,22 @@ textarea:focus-visible {
   background: rgba(120, 120, 163, 0.32);
   border-radius: 999px;
 }
+
+@media (display-mode: standalone) {
+  body {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+  
+  /* Allow text selection inside input fields */
+  input, textarea {
+    -webkit-user-select: text;
+    user-select: text;
+  }
+}
+
+.padding-safe-bottom {
+  padding-bottom: env(safe-area-inset-bottom, 16px);
+}

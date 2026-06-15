@@ -380,7 +380,7 @@ export function StreakHeatmap() {
             <span className="text-xs font-bold uppercase tracking-wider text-teal-400/80">Quote of the Day</span>
           </div>
           <p className="text-sm font-medium text-white/95 italic leading-relaxed pl-1">
-            "{dailyQuote}"
+            &quot;{dailyQuote}&quot;
           </p>
         </div>
       </div>
