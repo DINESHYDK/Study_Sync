@@ -13,14 +13,13 @@ import {
   CheckSquare,
   ChevronRight,
   Clock3,
-  CloudOff,
+  Download,
   Flame,
   Link2,
   MessageSquare,
   Minus,
-  Music2,
   Send,
-  Volume2,
+  Smartphone,
 } from "lucide-react";
 
 import { FadeIn } from "@/components/landing/FadeIn";
@@ -122,43 +121,33 @@ function StreakPreview() {
   );
 }
 
-function SoundBoardPreview() {
-  const sounds = [
-    { label: "Rain", emoji: "🌧️", active: true },
-    { label: "Forest", emoji: "🌿", active: false },
-    { label: "Café", emoji: "☕", active: true },
-    { label: "Waves", emoji: "🌊", active: false },
-  ];
-
+function MobileAppPreview() {
   return (
-    <div className="grid gap-3">
-      <div className="flex items-center gap-2 text-sm font-semibold">
-        <Music2 className="h-4 w-4 text-[#38bdf8]" />
-        <span>Ambient Sound Board</span>
-        <Badge className="ml-auto border-emerald-500/30 bg-emerald-500/10 text-emerald-400 text-xs">
-          Playing
-        </Badge>
+    <div className="flex flex-col items-center justify-center gap-4 py-1">
+      <div className="relative flex h-20 w-20 items-center justify-center rounded-[24px] bg-gradient-to-br from-[#38bdf8] to-[#0ea5e9] shadow-[0_0_30px_rgba(56,189,248,0.25)]">
+        <Smartphone className="h-10 w-10 text-white" />
+        <div className="absolute -bottom-2 -right-2 flex h-8 w-8 items-center justify-center rounded-full bg-[var(--surface-strong)] border-[3px] border-[#38bdf8]">
+          <Download className="h-3.5 w-3.5 text-[#38bdf8]" />
+        </div>
       </div>
-      <div className="grid grid-cols-2 gap-2">
-        {sounds.map((s) => (
-          <div
-            className={cn(
-              "flex items-center gap-2.5 rounded-xl border px-3 py-2.5 text-sm transition-all",
-              s.active
-                ? "border-[#38bdf8]/30 bg-[#38bdf8]/8 text-[#38bdf8] shadow-[0_0_18px_rgba(56,189,248,0.12)]"
-                : "border-[var(--border-strong)] bg-[var(--surface)] text-muted-foreground",
-            )}
-            key={s.label}
-          >
-            <span className="text-base">{s.emoji}</span>
-            <span className="font-medium">{s.label}</span>
-            {s.active && <Volume2 className="ml-auto h-3 w-3 shrink-0 animate-pulse" />}
+      <div className="text-center">
+        <p className="font-heading text-lg font-bold">Install as App</p>
+        <p className="text-xs text-muted-foreground mt-1 px-2">Get the native mobile experience right from your browser.</p>
+      </div>
+      <div className="mt-1 flex w-full flex-col gap-2">
+        <div className="flex items-center gap-2.5 rounded-xl border border-[var(--border-strong)] bg-[var(--surface)] p-2">
+          <div className="flex h-6 w-6 items-center justify-center rounded-md bg-[#38bdf8]/10 text-[#38bdf8]">
+            <span className="text-[10px] font-bold uppercase tracking-wider">iOS</span>
           </div>
-        ))}
+          <span className="text-xs text-muted-foreground flex-1">Add to Home Screen</span>
+        </div>
+        <div className="flex items-center gap-2.5 rounded-xl border border-[var(--border-strong)] bg-[var(--surface)] p-2">
+          <div className="flex h-6 w-6 items-center justify-center rounded-md bg-[#38bdf8]/10 text-[#38bdf8]">
+            <span className="text-[10px] font-bold uppercase tracking-wider">And</span>
+          </div>
+          <span className="text-xs text-muted-foreground flex-1">Install App prompt</span>
+        </div>
       </div>
-      <p className="text-center text-xs text-muted-foreground">
-        Sounds auto-pause when your timer stops
-      </p>
     </div>
   );
 }
@@ -434,20 +423,6 @@ const features: {
     accent: "amber",
   },
   {
-    label: "Focus Sounds",
-    title: "Your own ambient study room.",
-    body: "Pick rain, a café, forest sounds, or ocean waves. Sounds auto-play when your timer starts and auto-pause when it stops — no manual fiddling.",
-    points: [
-      "4 ambient sound channels",
-      "Auto-plays with the timer",
-      "Individual volume per channel",
-      "Persists across sessions",
-    ],
-    icon: Music2,
-    preview: <SoundBoardPreview />,
-    accent: "sky",
-  },
-  {
     label: "Todo-Timer Linking",
     title: "Know exactly where your hours went.",
     body: "When you start a timer segment, link it to a task. StudySync tracks time-per-task automatically. See your todo list with real study minutes logged against each item.",
@@ -460,6 +435,20 @@ const features: {
     icon: CheckSquare,
     preview: <TodoTimerPreview />,
     accent: "violet",
+  },
+  {
+    label: "Mobile App",
+    title: "Study anywhere, anytime.",
+    body: "StudySync is now a fully installable Progressive Web App. Get the snappy, full-screen native mobile experience without visiting an app store.",
+    points: [
+      "Install directly from browser",
+      "Fast, offline-ready shell",
+      "No app store required",
+      "Takes almost zero storage",
+    ],
+    icon: Smartphone,
+    preview: <MobileAppPreview />,
+    accent: "sky",
   },
   {
     label: "Friend Comments",
