@@ -1,6 +1,6 @@
 "use client";
 
-import { ChevronLeft, ChevronRight, Flame, Info, Share, Trophy } from "lucide-react";
+import { ChevronLeft, ChevronRight, Flame, Info, CloudOff, Trophy } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 
@@ -242,8 +242,8 @@ export function StreakHeatmap() {
   return (
     <div className="relative overflow-hidden rounded-3xl border border-[#2a2a35] bg-[#1a1a24] p-6 shadow-2xl">
       {/* Subtle top glow effect mimicking the design */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-32 h-[2px] bg-orange-500 rounded-full" />
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-64 h-32 bg-orange-500/10 blur-[50px] pointer-events-none" />
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-32 h-[2px] bg-teal-500 rounded-full" />
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-64 h-32 bg-teal-500/10 blur-[50px] pointer-events-none" />
 
       {isLoading ? <HeatmapSkeleton /> : (
         <div className="relative z-10 flex flex-col gap-8">
@@ -255,20 +255,20 @@ export function StreakHeatmap() {
                 const quote = MOTIVATIONAL_QUOTES[new Date().getDay() % MOTIVATIONAL_QUOTES.length];
                 toast.info("Quote of the day", { description: quote });
               }}
-              className="flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-white/5 text-white/50 transition-colors hover:bg-white/10 hover:text-white"
+              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-white/10 bg-white/5 text-white/50 transition-colors hover:bg-white/10 hover:text-white"
             >
               <Info className="h-4 w-4" />
             </button>
             
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2 sm:gap-4 flex-1 justify-center mx-2">
               <button 
                 onClick={handlePrevMonth}
-                className="flex h-8 w-8 items-center justify-center rounded-full text-white/50 transition-colors hover:bg-white/5 hover:text-white"
+                className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-white/50 transition-colors hover:bg-white/5 hover:text-white"
               >
                 <ChevronLeft className="h-5 w-5" />
               </button>
               
-              <div className="flex items-center justify-center rounded-2xl bg-white/5 px-4 py-1.5 backdrop-blur-sm border border-white/5">
+              <div className="flex items-center justify-center rounded-2xl bg-white/5 px-6 py-2 backdrop-blur-sm border border-white/5 whitespace-nowrap">
                 <span className="font-semibold text-white/90">
                   {MONTH_NAMES[currentDate.getMonth()]} {currentDate.getFullYear()}
                 </span>
@@ -276,21 +276,13 @@ export function StreakHeatmap() {
               
               <button 
                 onClick={handleNextMonth}
-                className="flex h-8 w-8 items-center justify-center rounded-full text-white/50 transition-colors hover:bg-white/5 hover:text-white"
+                className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-white/50 transition-colors hover:bg-white/5 hover:text-white"
               >
                 <ChevronRight className="h-5 w-5" />
               </button>
             </div>
             
-            <button 
-              onClick={() => {
-                navigator.clipboard.writeText(`I'm on a ${currentStreak}-day study streak on StudySync! 🔥`);
-                toast.success("Streak copied to clipboard!");
-              }}
-              className="flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-white/5 text-white/50 transition-colors hover:bg-white/10 hover:text-white"
-            >
-              <Share className="h-4 w-4" />
-            </button>
+            <div className="h-10 w-10 shrink-0" /> {/* Spacer to keep header balanced */}
           </div>
 
           {/* Calendar Grid */}
@@ -313,14 +305,14 @@ export function StreakHeatmap() {
               if (!day.isFuture && !day.isToday && hasStudied) {
                 // Past active day = Flame
                 content = (
-                  <span className="relative flex items-center justify-center drop-shadow-[0_0_8px_rgba(249,115,22,0.8)]">
-                    <span className="text-2xl">🔥</span>
+                  <span className="relative flex items-center justify-center drop-shadow-[0_0_8px_rgba(45,212,191,0.8)]">
+                    <Flame className="h-5 w-5 text-teal-400 fill-teal-400/20" />
                   </span>
                 );
                 isSpecial = true;
               } else if (!day.isFuture && !day.isToday && !hasStudied) {
-                // Past inactive day = Crying
-                content = <span className="text-2xl opacity-90 grayscale-[30%]">😭</span>;
+                // Past inactive day = CloudOff
+                content = <CloudOff className="h-5 w-5 text-white/20" />;
                 isSpecial = true;
               } else {
                 // Future or today (or past days if we want simple numbers)
@@ -328,7 +320,7 @@ export function StreakHeatmap() {
                   <span className={[
                     "text-sm font-semibold transition-colors",
                     day.isCurrentMonth ? "text-white/80" : "text-white/20",
-                    day.isToday ? "text-orange-400 font-bold" : ""
+                    day.isToday ? "text-teal-400 font-bold" : ""
                   ].join(" ")}>
                     {day.dayNum}
                   </span>
@@ -338,8 +330,8 @@ export function StreakHeatmap() {
               // Special case: Today, if studied, show Flame instead of number
               if (day.isToday && hasStudied) {
                 content = (
-                  <span className="relative flex items-center justify-center drop-shadow-[0_0_8px_rgba(249,115,22,0.8)]">
-                    <span className="text-2xl">🔥</span>
+                  <span className="relative flex items-center justify-center drop-shadow-[0_0_8px_rgba(45,212,191,0.8)]">
+                    <Flame className="h-5 w-5 text-teal-400 fill-teal-400/20" />
                   </span>
                 );
                 isSpecial = true;
@@ -349,7 +341,7 @@ export function StreakHeatmap() {
                 <div key={i} className="flex flex-col items-center justify-center h-10 relative">
                   {/* Today ring highlight */}
                   {day.isToday && !isSpecial && (
-                    <div className="absolute inset-0 m-auto h-8 w-8 rounded-full border border-orange-500/50" />
+                    <div className="absolute inset-0 m-auto h-8 w-8 rounded-full border border-teal-500/50" />
                   )}
                   {content}
                 </div>
@@ -363,12 +355,12 @@ export function StreakHeatmap() {
             <div className="flex w-full sm:w-auto overflow-hidden rounded-full border border-white/10 bg-white/5 backdrop-blur-sm">
               <div className="flex flex-1 sm:flex-none justify-center items-center gap-2 px-6 py-3 border-r border-white/10">
                 <span className="text-sm font-medium text-white/80">Current</span>
-                <span className="text-sm">🔥</span>
+                <Flame className="h-4 w-4 text-teal-400 fill-teal-400/20" />
                 <span className="text-sm font-bold text-white">{currentStreak}</span>
               </div>
               <div className="flex flex-1 sm:flex-none justify-center items-center gap-2 px-6 py-3">
                 <span className="text-sm font-medium text-white/80">Max</span>
-                <span className="text-sm text-orange-400">{'</>'}</span>
+                <span className="text-sm font-bold text-teal-400">{'</>'}</span>
                 <span className="text-sm font-bold text-white">{longestStreak}</span>
               </div>
             </div>
