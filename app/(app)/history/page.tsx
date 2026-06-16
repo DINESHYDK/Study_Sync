@@ -1,8 +1,9 @@
 "use client";
 
-import { BookOpenCheck, CheckSquare, Clock3, Hash } from "lucide-react";
+import { BookOpenCheck, CalendarIcon, CheckSquare, Clock3, Hash } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
+import { format, parse } from "date-fns";
 
 import { useSupabase } from "@/components/providers/SupabaseProvider";
 import { SessionSegmentList } from "@/components/timer/SessionSegmentList";
@@ -10,10 +11,12 @@ import { SubjectChart } from "@/components/stats/SubjectChart";
 import { TodoList } from "@/components/todos/TodoList";
 import { type TodoRow } from "@/components/todos/TodoItem";
 import { Card, CardContent } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Button } from "@/components/ui/button";
+import { Calendar } from "@/components/ui/calendar";
 import { HistorySkeleton } from "@/components/ui/skeletons";
 import { formatDurationCompact, totalDurationSecs } from "@/lib/timer";
-import { todayLocalDate } from "@/lib/utils";
+import { cn, todayLocalDate } from "@/lib/utils";
 import { type TimerSegment } from "@/stores/useTimerStore";
 import { useUserStore } from "@/stores/useUserStore";
 
@@ -122,13 +125,29 @@ export default function HistoryPage() {
         </div>
 
         {/* Date picker — capped at today so future dates can't be selected */}
-        <Input
-          className="w-full sm:w-[180px]"
-          max={todayLocalDate()}
-          onChange={(e) => setSelectedDate(e.target.value)}
-          type="date"
-          value={selectedDate}
-        />
+        <Popover>
+          <PopoverTrigger asChild>
+            <Button
+              variant="outline"
+              className={cn(
+                "w-full sm:w-[220px] justify-start text-left font-normal bg-card/40 border-border hover:bg-secondary",
+                !selectedDate && "text-muted-foreground"
+              )}
+            >
+              <CalendarIcon className="mr-2 h-4 w-4 text-teal-500" />
+              {selectedDate ? format(parse(selectedDate, "yyyy-MM-dd", new Date()), "PPP") : <span>Pick a date</span>}
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="w-auto p-0" align="end">
+            <Calendar
+              mode="single"
+              selected={selectedDate ? parse(selectedDate, "yyyy-MM-dd", new Date()) : undefined}
+              onSelect={(d) => d && setSelectedDate(format(d, "yyyy-MM-dd"))}
+              disabled={(date) => date > new Date()}
+              initialFocus
+            />
+          </PopoverContent>
+        </Popover>
       </header>
 
       {/* ── Body ───────────────────────────────────────────────────────────── */}
