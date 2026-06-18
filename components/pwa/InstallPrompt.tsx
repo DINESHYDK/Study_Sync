@@ -2,14 +2,21 @@
 
 import { useEffect, useState } from "react";
 import { Download, X, Share, PlusSquare } from "lucide-react";
+import { usePathname } from "next/navigation";
 
 export function InstallPrompt() {
+  const pathname = usePathname();
   const [isIOS, setIsIOS] = useState(false);
   const [isStandalone, setIsStandalone] = useState(true); // Default true to prevent hydration mismatch / flash
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
   const [showPrompt, setShowPrompt] = useState(false);
 
   useEffect(() => {
+    if (pathname !== "/") {
+      setShowPrompt(false);
+      return;
+    }
+
     // Run only on client
     const isStandaloneMode = window.matchMedia("(display-mode: standalone)").matches || (window.navigator as any).standalone === true;
     setIsStandalone(isStandaloneMode);
@@ -54,7 +61,7 @@ export function InstallPrompt() {
         clearTimeout(timer);
       };
     }
-  }, []);
+  }, [pathname]);
 
   const handleDismiss = () => {
     setShowPrompt(false);
@@ -82,7 +89,7 @@ export function InstallPrompt() {
     setDeferredPrompt(null);
   };
 
-  if (!showPrompt || isStandalone) return null;
+  if (pathname !== "/" || !showPrompt || isStandalone) return null;
 
   return (
     <div className="fixed bottom-4 left-4 right-4 md:left-auto md:right-8 md:w-96 z-50 animate-in slide-in-from-bottom-8 fade-in duration-500 lg:hidden">
