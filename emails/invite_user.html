@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="color-scheme" content="dark">
   <meta name="supported-color-schemes" content="dark">
-  <title>Join {{friend_name}} on StudySync</title>
+  <title>You've been invited to StudySync</title>
   <!--[if mso]>
   <style type="text/css">
     body, table, td, a, span { font-family: Arial, sans-serif !important; }
@@ -46,16 +46,13 @@
           <tr>
             <td class="card" style="background-color: #12121a; border: 1px solid #2a2a3d; border-radius: 16px; padding: 40px; text-align: left;">
               <h1 class="h1" style="margin: 0 0 16px 0; font-family: 'Space Grotesk', -apple-system, sans-serif; font-size: 30px; font-weight: 700; color: #ffffff; line-height: 1.25; letter-spacing: -0.02em;">
-                Study together with {{friend_name}}
+                You've been invited
               </h1>
               <p style="margin: 0 0 24px 0; font-size: 16px; line-height: 1.5; color: #94a3b8;">
-                Hey there,
+                Hey {{ .Email }},
               </p>
               <p style="margin: 0 0 24px 0; font-size: 16px; line-height: 1.5; color: #94a3b8;">
-                A friend has invited you to join their study group on <strong>StudySync</strong>.
-              </p>
-              <p style="margin: 0 0 24px 0; font-size: 16px; line-height: 1.5; color: #94a3b8;">
-                StudySync lets you track your focus sessions, view your friends' real-time activities, and turn studying into a motivating, friendly competition.
+                You have been invited to join <strong>StudySync</strong>, the ultimate study session tracker and companion tool. Set up your account by clicking the button below.
               </p>
               
               <!-- CTA Button -->
@@ -69,10 +66,16 @@
                 </tr>
               </table>
               
+              <p style="margin: 0 0 24px 0; font-size: 14px; line-height: 1.5; color: #7878a3;">
+                If you cannot click the button, copy and paste this URL:
+                <br>
+                <a href="{{ .ConfirmationURL }}" target="_blank" style="color: #38bdf8; word-break: break-all;">{{ .ConfirmationURL }}</a>
+              </p>
+              
               <hr style="border: 0; border-top: 1px solid #2a2a3d; margin: 32px 0 24px 0;">
               
               <p style="margin: 0; font-size: 13px; line-height: 1.5; color: #7878a3;">
-                If you do not want to join, simply ignore this email. You will not be emailed again.
+                If you did not expect this invitation, you can safely ignore this email.
               </p>
             </td>
           </tr>

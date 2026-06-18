@@ -133,6 +133,37 @@ Below is the metadata and text-fallback recommendations for each template:
   View the challenge: https://studysync.dineshydk.dev/friends
   ```
 
+### 10. Invite User (Supabase Auth)
+* **Template File**: [`invite_user.html`](./invite_user.html)
+* **Subject Line**: `You've been invited to StudySync`
+* **Preview Text**: `Set up your StudySync account to start tracking sessions and studying with friends.`
+* **Plain-Text Fallback**:
+  ```text
+  You have been invited to join StudySync.
+  Accept your invitation here: {{confirmation_url}}
+  ```
+
+### 11. Change Email Address (Supabase Auth)
+* **Template File**: [`email_change.html`](./email_change.html)
+* **Subject Line**: `Confirm your new StudySync email address`
+* **Preview Text**: `Confirm the change of your email address from {{email}} to {{new_email}}.`
+* **Plain-Text Fallback**:
+  ```text
+  Confirm your new email
+  Click the link below to confirm the change of your email address from {{email}} to {{new_email}}:
+  {{confirmation_url}}
+  ```
+
+### 12. Account Deletion Confirmation
+* **Template File**: [`account_deleted.html`](./account_deleted.html)
+* **Subject Line**: `Your StudySync account has been deleted`
+* **Preview Text**: `All of your study logs and account details have been permanently removed.`
+* **Plain-Text Fallback**:
+  ```text
+  Account successfully deleted.
+  As requested, your StudySync account and all associated data have been permanently deleted from our databases.
+  ```
+
 ---
 
 ## 2. Integration with Supabase Auth Templates
