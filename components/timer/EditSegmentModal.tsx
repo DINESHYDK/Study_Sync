@@ -165,7 +165,7 @@ export function EditSegmentModal({
             <DialogHeader>
               <DialogTitle className="text-lg font-bold font-heading">Delete Study Segment?</DialogTitle>
               <DialogDescription className="text-sm text-muted-foreground mt-1">
-                Are you sure you want to delete this study segment for <strong className="text-foreground">"{segment.subject_name}"</strong>? This action cannot be undone.
+                Are you sure you want to delete this study segment for <strong className="text-foreground">&quot;{segment.subject_name}&quot;</strong>? This action cannot be undone.
               </DialogDescription>
             </DialogHeader>
             <DialogFooter className="mt-4 flex gap-2 justify-end">
