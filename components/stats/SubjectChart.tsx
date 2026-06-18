@@ -9,6 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { formatDurationCompact, secondsBetween } from "@/lib/timer";
 import { todayLocalDate } from "@/lib/utils";
 import { useUserStore } from "@/stores/useUserStore";
+import { useTimerStore } from "@/stores/useTimerStore";
 
 // ── Constants ──────────────────────────────────────────────────────────────────
 
@@ -138,6 +139,7 @@ function DonutArc({ color, fraction, startFraction, delay, totalSeconds }: ArcPr
 export function SubjectChart({ fixedDate }: { fixedDate?: string }) {
   const { supabase, isConfigured } = useSupabase();
   const profile = useUserStore((state) => state.profile);
+  const storeSegments = useTimerStore((state) => state.segments);
   const [period, setPeriod] = useState<Period>("today");
   const [slices, setSlices] = useState<SubjectSlice[]>([]);
   const [totalSeconds, setTotalSeconds] = useState(0);
@@ -231,7 +233,7 @@ export function SubjectChart({ fixedDate }: { fixedDate?: string }) {
     } finally {
       setLoading(false);
     }
-  }, [isConfigured, profile, supabase, effectiveFrom, effectiveTo]);
+  }, [isConfigured, profile, supabase, effectiveFrom, effectiveTo, storeSegments]);
 
   useEffect(() => {
     void loadData();

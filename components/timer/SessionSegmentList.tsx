@@ -1,6 +1,6 @@
 "use client";
 
-import { Check, Link2, Pencil } from "lucide-react";
+import { Check, Link2, Pencil, Sliders } from "lucide-react";
 import { FormEvent, useCallback, useEffect, useState } from "react";
 
 import { useSupabase } from "@/components/providers/SupabaseProvider";
@@ -11,11 +11,13 @@ import { useTimerStore, type TimerSegment } from "@/stores/useTimerStore";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { EditSegmentModal } from "@/components/timer/EditSegmentModal";
 
 type SessionSegmentListProps = {
   segments: TimerSegment[];
   readOnly?: boolean;
   title?: string;
+  onRefresh?: () => void;
 };
 
 function EditableSubject({
@@ -101,11 +103,19 @@ function useTodoTexts(segments: TimerSegment[]): Record<string, string> {
   return textMap;
 }
 
-export function SessionSegmentList({ segments, readOnly = false, title = "Session History" }: SessionSegmentListProps) {
+export function SessionSegmentList({
+  segments,
+  readOnly = false,
+  title = "Session History",
+  onRefresh,
+}: SessionSegmentListProps) {
   const isHydrated = useTimerStore((state) => state.isHydrated);
   const total = totalDurationSecs(segments);
   // Resolve linked todo labels for display (batched single query).
   const todoTexts = useTodoTexts(segments);
+
+  const [selectedSegment, setSelectedSegment] = useState<TimerSegment | null>(null);
+  const [openEdit, setOpenEdit] = useState(false);
 
   if (!isHydrated && !readOnly) {
     return (
@@ -134,10 +144,11 @@ export function SessionSegmentList({ segments, readOnly = false, title = "Sessio
           </div>
         ) : (
           <div className="min-w-0 text-sm">
-            <div className="hidden grid-cols-[minmax(0,1.05fr)_minmax(7rem,0.95fr)_minmax(4.5rem,auto)] gap-3 border-b border-border pb-3 text-xs font-semibold uppercase text-muted-foreground sm:grid">
+            <div className="hidden grid-cols-[minmax(0,1.05fr)_minmax(7.5rem,0.95fr)_minmax(5rem,auto)_2.5rem] gap-3 border-b border-border pb-3 text-xs font-semibold uppercase text-muted-foreground sm:grid">
               <div>Subject Name</div>
               <div>Time Range</div>
               <div className="text-right">Duration</div>
+              <div className="text-right"></div>
             </div>
             <div className="grid min-w-0">
               {segments.map((segment) => {
@@ -145,7 +156,7 @@ export function SessionSegmentList({ segments, readOnly = false, title = "Sessio
 
                 return (
                   <div
-                    className="grid min-w-0 gap-2 border-b border-border/70 py-3 last:border-0 sm:grid-cols-[minmax(0,1.05fr)_minmax(7rem,0.95fr)_minmax(4.5rem,auto)] sm:gap-3 sm:items-center"
+                    className="grid min-w-0 gap-2 border-b border-border/70 py-3 last:border-0 sm:grid-cols-[minmax(0,1.05fr)_minmax(7.5rem,0.95fr)_minmax(5rem,auto)_2.5rem] sm:gap-3 sm:items-center"
                     key={segment.id}
                   >
                     <div className="min-w-0">
@@ -178,6 +189,24 @@ export function SessionSegmentList({ segments, readOnly = false, title = "Sessio
                       </span>
                       <span className="whitespace-nowrap">{running ? "Running" : formatDurationCompact(segmentDurationSecs(segment))}</span>
                     </div>
+                    <div className="flex justify-end">
+                      {!readOnly && !running ? (
+                        <Button
+                          size="icon-sm"
+                          variant="ghost"
+                          onClick={() => {
+                            setSelectedSegment(segment);
+                            setOpenEdit(true);
+                          }}
+                          className="h-8 w-8 text-muted-foreground hover:text-foreground hover:bg-[#6c63ff]/10"
+                        >
+                          <Sliders className="h-3.5 w-3.5" />
+                          <span className="sr-only">Edit segment</span>
+                        </Button>
+                      ) : (
+                        <div className="h-8 w-8" />
+                      )}
+                    </div>
                   </div>
                 );
               })}
@@ -189,6 +218,12 @@ export function SessionSegmentList({ segments, readOnly = false, title = "Sessio
           </div>
         )}
       </CardContent>
+      <EditSegmentModal
+        segment={selectedSegment}
+        open={openEdit}
+        onOpenChange={setOpenEdit}
+        onRefresh={onRefresh}
+      />
     </Card>
   );
 }

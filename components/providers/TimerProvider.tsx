@@ -414,6 +414,107 @@ export function TimerProvider({ children }: { children: React.ReactNode }) {
     [isConfigured, profile, supabase, updateLocalSegmentSubject],
   );
 
+  const deleteSegment = useCallback(
+    async (segmentId: string) => {
+      if (!profile) {
+        return;
+      }
+
+      if (!isConfigured) {
+        const today = todayLocalDate();
+        const segments = readDemoSegments(today);
+        const segment = segments.find((s) => s.id === segmentId);
+        if (!segment) {
+          toast.error("Segment not found");
+          return;
+        }
+        const updated = segments.filter((s) => s.id !== segmentId);
+        writeDemoSegments(today, updated);
+        replaceSegments(updated);
+        toast.success("Segment deleted");
+        return;
+      }
+
+      const { error } = await supabase
+        .from("session_segments")
+        .delete()
+        .eq("id", segmentId)
+        .eq("user_id", profile.id);
+
+      if (error) {
+        toast.error(error.message);
+        return;
+      }
+
+      await loadToday();
+      toast.success("Segment deleted");
+    },
+    [isConfigured, profile, supabase, loadToday, replaceSegments],
+  );
+
+  const updateSegmentDuration = useCallback(
+    async (segmentId: string, newDurationSecs: number) => {
+      if (!profile) {
+        return;
+      }
+
+      let segment: TimerSegment | null = null;
+      const today = todayLocalDate();
+
+      if (!isConfigured) {
+        const segments = readDemoSegments(today);
+        segment = segments.find((s) => s.id === segmentId) ?? null;
+      } else {
+        const { data } = await supabase
+          .from("session_segments")
+          .select("*")
+          .eq("id", segmentId)
+          .eq("user_id", profile.id)
+          .maybeSingle();
+        segment = data;
+      }
+
+      if (!segment) {
+        toast.error("Segment not found");
+        return;
+      }
+
+      const startedAtTime = new Date(segment.started_at).getTime();
+      const newEndedAt = new Date(startedAtTime + newDurationSecs * 1000).toISOString();
+
+      if (!isConfigured) {
+        const segments = readDemoSegments(today).map((s) =>
+          s.id === segmentId
+            ? {
+                ...s,
+                ended_at: newEndedAt,
+                duration_secs: newDurationSecs,
+              }
+            : s,
+        );
+        writeDemoSegments(today, segments);
+        replaceSegments(segments);
+        toast.success("Duration updated");
+        return;
+      }
+
+      const { error } = await supabase
+        .from("session_segments")
+        .update({ ended_at: newEndedAt })
+        .eq("id", segmentId)
+        .eq("user_id", profile.id);
+
+      if (error) {
+        toast.error(error.message);
+        return;
+      }
+
+      await loadToday();
+      toast.success("Duration updated");
+    },
+    [isConfigured, profile, supabase, loadToday, replaceSegments],
+  );
+
   /**
    * Splits a running segment at midnight when the user studies past 00:00.
    * - Closes the current segment at 23:59:59 (local) of the started date.
@@ -665,9 +766,11 @@ export function TimerProvider({ children }: { children: React.ReactNode }) {
       resumeTimer,
       pauseTimer,
       updateSegmentSubject,
+      deleteSegment,
+      updateSegmentDuration,
       isToggling,
     }),
-    [loadToday, pauseTimer, resumeTimer, updateSegmentSubject, isToggling],
+    [loadToday, pauseTimer, resumeTimer, updateSegmentSubject, deleteSegment, updateSegmentDuration, isToggling],
   );
 
   return <TimerContext.Provider value={value}>{children}</TimerContext.Provider>;

@@ -221,6 +221,7 @@ export default function HistoryPage() {
             readOnly={!isToday}
             segments={data.segments}
             title="Session Segments"
+            onRefresh={loadDayData}
           />
 
           {/* ── Todo list ──────────────────────────────────────────────────── */}

@@ -11,6 +11,8 @@ export type TimerContextValue = {
   resumeTimer: () => Promise<void>;
   pauseTimer: (options?: PauseTimerOptions) => Promise<void>;
   updateSegmentSubject: (segmentId: string, subjectName: string) => Promise<void>;
+  deleteSegment: (segmentId: string) => Promise<void>;
+  updateSegmentDuration: (segmentId: string, newDurationSecs: number) => Promise<void>;
   isToggling: boolean;
 };
 
