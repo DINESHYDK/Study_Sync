@@ -3,7 +3,7 @@
 import { BookOpenCheck, CalendarIcon, CheckSquare, Clock3, Hash } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
-import { format, parse } from "date-fns";
+import { differenceInCalendarDays, format, parse } from "date-fns";
 
 import { useSupabase } from "@/components/providers/SupabaseProvider";
 import { SessionSegmentList } from "@/components/timer/SessionSegmentList";
@@ -35,6 +35,17 @@ export default function HistoryPage() {
   const [isLoading, setLoading] = useState(true);
 
   const isToday = selectedDate === todayLocalDate();
+
+  const canEdit = (() => {
+    try {
+      const today = new Date();
+      const targetDate = parse(selectedDate, "yyyy-MM-dd", new Date());
+      const diffDays = differenceInCalendarDays(today, targetDate);
+      return diffDays >= 0 && diffDays <= 3;
+    } catch {
+      return false;
+    }
+  })();
 
   const loadDayData = useCallback(async () => {
     if (!profile) return;
@@ -218,7 +229,7 @@ export default function HistoryPage() {
           {/* ── Segment list ───────────────────────────────────────────────── */}
           {/* readOnly=false for today so subject names remain editable */}
           <SessionSegmentList
-            readOnly={!isToday}
+            readOnly={!canEdit}
             segments={data.segments}
             title="Session Segments"
             onRefresh={loadDayData}
