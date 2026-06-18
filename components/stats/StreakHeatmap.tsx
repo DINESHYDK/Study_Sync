@@ -303,8 +303,11 @@ export function StreakHeatmap() {
                 if (!day.isFuture && !day.isToday && hasStudied) {
                   // Past active day = Flame
                   content = (
-                    <span className="relative flex items-center justify-center drop-shadow-[0_0_8px_rgba(45,212,191,0.8)]">
-                      <Flame className="h-5 w-5 text-teal-400 fill-teal-400/20" />
+                    <span className="relative flex items-center justify-center">
+                      <Flame 
+                        className="h-5 w-5 text-teal-400 fill-teal-400/20 animate-flame-teal" 
+                        style={{ animationDelay: `${(i * 137) % 1000}ms` }} 
+                      />
                     </span>
                   );
                   isSpecial = true;
@@ -328,8 +331,11 @@ export function StreakHeatmap() {
                 // Special case: Today, if studied, show Flame instead of number
                 if (day.isToday && hasStudied) {
                   content = (
-                    <span className="relative flex items-center justify-center drop-shadow-[0_0_8px_rgba(45,212,191,0.8)]">
-                      <Flame className="h-5 w-5 text-teal-400 fill-teal-400/20" />
+                    <span className="relative flex items-center justify-center">
+                      <Flame 
+                        className="h-5 w-5 text-teal-400 fill-teal-400/20 animate-flame-teal" 
+                        style={{ animationDelay: "0ms" }} 
+                      />
                     </span>
                   );
                   isSpecial = true;
@@ -353,7 +359,7 @@ export function StreakHeatmap() {
               <div className="flex w-full sm:w-auto overflow-hidden rounded-full border border-white/10 bg-white/5 backdrop-blur-sm">
                 <div className="flex flex-1 sm:flex-none justify-center items-center gap-2 px-6 py-3 border-r border-white/10">
                   <span className="text-sm font-medium text-white/80">Current</span>
-                  <Flame className="h-4 w-4 text-teal-400 fill-teal-400/20" />
+                  <Flame className="h-4 w-4 text-teal-400 fill-teal-400/20 animate-flame-teal" />
                   <span className="text-sm font-bold text-white">{currentStreak}</span>
                 </div>
                 <div className="flex flex-1 sm:flex-none justify-center items-center gap-2 px-6 py-3">

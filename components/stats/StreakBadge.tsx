@@ -104,7 +104,7 @@ export function StreakBadge() {
         className="gap-1.5 px-3 py-1 text-sm font-semibold"
         variant={streak >= 7 ? "success" : "secondary"}
       >
-        <Flame className="h-3.5 w-3.5 text-orange-400" />
+        <Flame className="h-3.5 w-3.5 text-orange-400 animate-flame-amber" />
         {streak}-Day Streak
       </Badge>
     </motion.div>

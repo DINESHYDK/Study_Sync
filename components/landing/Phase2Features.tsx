@@ -46,7 +46,7 @@ function StreakPreview() {
             {/* Inner ring */}
             <span className="absolute inset-1 rounded-full bg-amber-500/10" />
             <div className="relative flex h-7 w-7 sm:h-9 sm:w-9 items-center justify-center rounded-full bg-amber-500/20">
-              <Flame className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-amber-400" />
+              <Flame className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-amber-400 animate-flame-amber" />
             </div>
           </div>
 
@@ -103,7 +103,10 @@ function StreakPreview() {
                   key={i}
                   className="flex aspect-square w-full min-w-0 max-w-[36px] sm:max-w-[40px] items-center justify-center rounded-xl border border-amber-500/40 bg-amber-500/15 shadow-[0_0_10px_rgba(245,158,11,0.25)] transition-all mx-auto"
                 >
-                  <Flame className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-amber-400" />
+                  <Flame 
+                    className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-amber-400 animate-flame-amber" 
+                    style={{ animationDelay: `${(i * 137) % 1000}ms` }} 
+                  />
                 </div>
               ) : (
                 <div
@@ -527,7 +530,7 @@ export function Phase2Features() {
                     {/* Label + icon */}
                     <div className="flex items-center gap-3">
                       <div className={cn("flex h-9 w-9 items-center justify-center rounded-xl border", accentCls)}>
-                        <Icon className="h-4 w-4" />
+                        <Icon className={cn("h-4 w-4", Icon === Flame && "animate-flame-amber")} />
                       </div>
                       <span className={cn("text-xs font-bold uppercase tracking-widest", accentCls.split(" ").at(-1))}>
                         {feat.label}
